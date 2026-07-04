@@ -33,12 +33,13 @@ export function drawScene(
 
   for (const bait of state.baits) {
     const x = torusDistance(bait.x, camX, WORLD_WIDTH);
-    if (x < -16 || x > VIEW_WIDTH + 4) continue;
+    // 中央揃え（幅 16 → x±8）なのでカリングも左右対称にする
+    if (x < -8 || x > VIEW_WIDTH + 8) continue;
     drawGrid(
       ctx,
       shadowFishSprite.frames[0],
       shadowFishSprite.palette,
-      x,
+      x - 8,
       bait.y - camY - 2,
       bait.dir > 0,
     );

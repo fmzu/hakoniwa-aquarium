@@ -23,14 +23,21 @@ export function attachPointerInput(
     );
   };
   canvas.addEventListener("pointerdown", (event) => {
+    if (!event.isPrimary) return;
     event.preventDefault();
+    // capture により canvas 外へドラッグしても move/up を canvas で受け続けられる
+    canvas.setPointerCapture(event.pointerId);
     drawing = true;
     onStroke(toWorld(event), true);
   });
   canvas.addEventListener("pointermove", (event) => {
+    if (!event.isPrimary) return;
     if (drawing) onStroke(toWorld(event), false);
   });
-  window.addEventListener("pointerup", () => {
+  canvas.addEventListener("pointerup", () => {
+    drawing = false;
+  });
+  canvas.addEventListener("pointercancel", () => {
     drawing = false;
   });
 }
