@@ -49,6 +49,11 @@ test("y は世界の上下端でクランプされる", () => {
   expect(hero.y).toBe(140);
 });
 
+test("y は世界の下端（HERO_MIN_Y）でもクランプされる", () => {
+  const { hero } = stepHero({ ...still(), y: 11, vy: -5 }, [], false);
+  expect(hero.y).toBe(10); // 11 + (-5 * 0.96) = 6.2 → clamp
+});
+
 test("入力の path を破壊しない（純粋関数）", () => {
   const input = [{ x: 82, y: 62 }];
   stepHero(still(), input, false);

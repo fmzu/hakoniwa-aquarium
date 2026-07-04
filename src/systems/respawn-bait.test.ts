@@ -7,5 +7,6 @@ test("主人公の反対側（torus の対蹠点）に置き直す", () => {
   const respawned = respawnBait(bait, 100, 74);
   expect(respawned.x).toBe(340); // mod(100 + 240, 480)
   expect(respawned.baseY).toBe(74);
+  expect(respawned.y).toBe(74); // リスポーン直後に古い y で描画されないよう即初期化
   expect(respawned.dir).toBe(1); // 進行方向は保つ
 });
