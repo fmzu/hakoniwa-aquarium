@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { torusDistance } from "./torusDistance";
+import { torusDistance } from "./torus-distance";
 
 test("近い方の経路が正の向きなら正の値", () => {
   expect(torusDistance(100, 60, 480)).toBe(40);

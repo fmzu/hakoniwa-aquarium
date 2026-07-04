@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { lerpColor } from "./lerpColor";
+import { lerpColor } from "./lerp-color";
 
 test("t=0 で始点の色", () => {
   expect(lerpColor([168, 221, 224], [44, 93, 116], 0)).toBe("rgb(168,221,224)");
