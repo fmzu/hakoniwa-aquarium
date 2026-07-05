@@ -16,6 +16,7 @@ export function drawPath(
     const isHead = i === 0;
     ctx.fillStyle = `rgba(255,176,198,${isHead ? 0.95 : 0.6})`;
     const size = isHead ? 2 : 1;
-    ctx.fillRect(x, point.y - camY, size, size);
+    // 座標を整数に丸めてサブピクセルのにじみを防ぐ
+    ctx.fillRect(Math.round(x), Math.round(point.y - camY), size, size);
   }
 }

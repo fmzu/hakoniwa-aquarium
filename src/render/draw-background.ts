@@ -17,8 +17,10 @@ export function drawBackground(
   gradient.addColorStop(1, depthColor(WORLD_HEIGHT));
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, VIEW_WIDTH, VIEW_HEIGHT);
+  // 砂の上端を整数に丸めてサブピクセルのにじみを防ぐ
+  const sandTop = Math.round(SAND_TOP_Y - camY);
   ctx.fillStyle = "#EAD9AE";
-  ctx.fillRect(0, SAND_TOP_Y - camY, VIEW_WIDTH, WORLD_HEIGHT - SAND_TOP_Y + 2);
+  ctx.fillRect(0, sandTop, VIEW_WIDTH, WORLD_HEIGHT - SAND_TOP_Y + 2);
   ctx.fillStyle = "#D6BF8E";
-  ctx.fillRect(0, SAND_TOP_Y - camY, VIEW_WIDTH, 1);
+  ctx.fillRect(0, sandTop, VIEW_WIDTH, 1);
 }
