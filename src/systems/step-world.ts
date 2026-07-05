@@ -15,17 +15,25 @@ import { isStrokePhase } from "../engine/is-stroke-phase";
 import type { Flash, GameState, Resident } from "../types";
 import { headPosition } from "./head-position";
 import { isBaitCaught } from "./is-bait-caught";
+import { isCeremonyActive } from "./is-ceremony-active";
 import { nextBirthSpecies } from "./next-birth-species";
 import { respawnBait } from "./respawn-bait";
 import { stepBait } from "./step-bait";
 import { stepHero } from "./step-hero";
 import { stepResident } from "./step-resident";
 
-/** 1 tick の全状態更新。主人公 → 餌移動 → 捕食 → 満腹/誕生 → 住民 → フラッシュ寿命 */
+/**
+ * 1 tick の全状態更新。主人公 → 餌移動 → 捕食 → 満腹/誕生 → 住民 → フラッシュ寿命。
+ * 誕生セレモニー中は主人公を完全静止させ（path は消費せず保持）、捕食判定もスキップする。
+ * カメラは主人公追従なので、これで誕生地点が画面内に留まる
+ */
 export function stepWorld(state: GameState, random: () => number): GameState {
   const elapsedMs = state.elapsedMs + TICK_MS;
+  const ceremony = isCeremonyActive(state.residents, elapsedMs);
   const stroke = isStrokePhase(elapsedMs);
-  const { hero, path } = stepHero(state.hero, state.path, stroke);
+  let { hero, path } = ceremony
+    ? { hero: state.hero, path: state.path }
+    : stepHero(state.hero, state.path, stroke);
   const head = headPosition(hero);
 
   let satiety = state.satiety;
@@ -35,7 +43,7 @@ export function stepWorld(state: GameState, random: () => number): GameState {
 
   const baits = state.baits.map((bait) => {
     const moved = stepBait(bait, elapsedMs);
-    if (!isBaitCaught(moved, head)) return moved;
+    if (ceremony || !isBaitCaught(moved, head)) return moved;
     satiety += 1;
     flashes = [...flashes, { x: moved.x, y: moved.y, bornAt: elapsedMs }];
     const newBaseY =
@@ -65,6 +73,8 @@ export function stepWorld(state: GameState, random: () => number): GameState {
         bornAtMs: elapsedMs,
       };
       residents = [...residents, born];
+      // セレモニー中はカメラ（主人公追従）を止め誕生地点にフォーカスするため即座に静止
+      hero = { ...hero, vx: 0, vy: 0 };
     }
   }
 
