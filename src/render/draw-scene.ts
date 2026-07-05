@@ -12,14 +12,21 @@ import {
 import { isStrokePhase } from "../engine/is-stroke-phase";
 import { mod } from "../engine/mod";
 import { torusDistance } from "../engine/torus-distance";
-import type { GameState } from "../types";
+import { isBirthFxActive } from "../systems/is-birth-fx-active";
+import type { GameState, Resident } from "../types";
+import { birthFxPhase } from "./birth-fx-phase";
 import { drawBackground } from "./draw-background";
+import { drawBirthFx } from "./draw-birth-fx";
+import { drawDarkenOverlay } from "./draw-darken-overlay";
 import { drawGrid } from "./draw-grid";
 import { drawPath } from "./draw-path";
 import { drawRingDots } from "./draw-ring-dots";
 import { isResidentFlipped } from "./is-resident-flipped";
 
-/** 1 フレームぶんの描画。背景 → 道のり → 餌 → 住民 → 主人公 → 捕食リング → 満腹ピップ */
+/**
+ * 1 フレームぶんの描画。
+ * 背景 → 道のり → 餌 → 住民（誕生中を除く） → 主人公 → 捕食リング → 暗転 → 新入り＋誕生演出 → 満腹ピップ
+ */
 export function drawScene(
   ctx: CanvasRenderingContext2D,
   state: GameState,
@@ -43,9 +50,16 @@ export function drawScene(
     );
   }
 
+  // 誕生演出中の住民は通常ループでは描かず、暗転オーバーレイの上に描く
+  const birthing: { resident: Resident; screenX: number }[] = [];
+
   for (const resident of state.residents) {
     const x = torusDistance(resident.x, camX, WORLD_WIDTH);
     if (x < -18 || x > VIEW_WIDTH + 4) continue;
+    if (isBirthFxActive(resident.bornAtMs, state.elapsedMs)) {
+      birthing.push({ resident, screenX: x });
+      continue;
+    }
     const sprite = RESIDENT_SPRITES[resident.species];
     // frameIntervalMs === 0（1 フレームのスプライト）は mod(x, 0) = NaN になるためガードする
     const frameIndex =
@@ -88,7 +102,28 @@ export function drawScene(
     );
   }
 
-  // HUD: 満腹ピップ
+  // 誕生演出: 均一暗転 → その上に新入り＋演出（同時複数誕生時は最も濃い暗転を 1 回だけ描く）
+  if (birthing.length > 0) {
+    let darkenAlpha = 0;
+    for (const b of birthing) {
+      darkenAlpha = Math.max(
+        darkenAlpha,
+        birthFxPhase(state.elapsedMs - b.resident.bornAtMs).darkenAlpha,
+      );
+    }
+    drawDarkenOverlay(ctx, darkenAlpha);
+    for (const b of birthing) {
+      drawBirthFx(
+        ctx,
+        b.resident,
+        state.elapsedMs,
+        b.screenX,
+        b.resident.y - camY,
+      );
+    }
+  }
+
+  // HUD: 満腹ピップ（暗転の影響を受けないよう最後に描く）
   for (let i = 0; i < SATIETY_MAX; i++) {
     ctx.fillStyle = i < state.satiety ? "#FFB0C6" : "rgba(255,255,255,0.25)";
     ctx.fillRect(4 + i * 6, 4, 4, 4);
