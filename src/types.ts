@@ -28,14 +28,19 @@ export type Resident = {
   y: number;
   dir: -1 | 1;
   phase: number;
+  /**
+   * 誕生時刻（ゲーム内 elapsedMs）。
+   * elapsedMs - bornAtMs < BIRTH_FX_TOTAL_MS の間は誕生演出中＝静止。
+   * 演出を再生しない住民（テストフィクスチャ等）は十分過去の値（例: -10000）にする
+   */
+  bornAtMs: number;
 };
 
-/** 捕食・誕生時の白リング（誕生演出の本実装は M2。これはプレースホルダ） */
+/** 捕食時の白ドットリング */
 export type Flash = {
   x: number;
   y: number;
   bornAt: number;
-  small: boolean;
 };
 
 export type GameState = {

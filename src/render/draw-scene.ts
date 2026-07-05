@@ -3,7 +3,9 @@ import { ramuneFishSprite } from "../data/sprites/ramune-fish";
 import { shadowFishSprite } from "../data/sprites/shadow-fish";
 import { strawberryJellySprite } from "../data/sprites/strawberry-jelly";
 import {
+  FLASH_BASE_RADIUS,
   FLASH_DURATION_MS,
+  FLASH_GROW_RADIUS,
   SATIETY_MAX,
   VIEW_WIDTH,
   WORLD_WIDTH,
@@ -15,13 +17,14 @@ import type { GameState, SpeciesId, Sprite } from "../types";
 import { drawBackground } from "./draw-background";
 import { drawGrid } from "./draw-grid";
 import { drawPath } from "./draw-path";
+import { drawRingDots } from "./draw-ring-dots";
 
 const RESIDENT_SPRITES: Record<SpeciesId, Sprite> = {
   ramuneFish: ramuneFishSprite,
   strawberryJelly: strawberryJellySprite,
 };
 
-/** 1 フレームぶんの描画。背景 → 道のり → 餌 → 住民 → 主人公 → フラッシュ → 満腹ピップ */
+/** 1 フレームぶんの描画。背景 → 道のり → 餌 → 住民 → 主人公 → 捕食リング → 満腹ピップ */
 export function drawScene(
   ctx: CanvasRenderingContext2D,
   state: GameState,
@@ -79,20 +82,17 @@ export function drawScene(
     state.hero.facing === 1,
   );
 
-  // 捕食・誕生フラッシュ（誕生演出の本実装は M2。白リングのプレースホルダ）
+  // 捕食フラッシュ（白ドットリング。ベクター描画禁止のドット規律に従う）
   for (const flash of state.flashes) {
     const age = (state.elapsedMs - flash.bornAt) / FLASH_DURATION_MS;
     const x = torusDistance(flash.x, camX, WORLD_WIDTH);
-    ctx.strokeStyle = `rgba(255,255,255,${1 - age})`;
-    ctx.beginPath();
-    ctx.arc(
+    drawRingDots(
+      ctx,
       x,
       flash.y - camY,
-      (flash.small ? 3 : 5) + age * (flash.small ? 5 : 14),
-      0,
-      Math.PI * 2,
+      FLASH_BASE_RADIUS + age * FLASH_GROW_RADIUS,
+      `rgba(255,255,255,${1 - age})`,
     );
-    ctx.stroke();
   }
 
   // HUD: 満腹ピップ

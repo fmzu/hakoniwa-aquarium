@@ -1,3 +1,5 @@
+import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
+import { SPECIES_MOTION } from "../data/species-motion";
 import {
   BAIT_MAX_BASE_Y,
   BAIT_MIN_BASE_Y,
@@ -35,10 +37,7 @@ export function stepWorld(state: GameState, random: () => number): GameState {
     const moved = stepBait(bait, elapsedMs);
     if (!isBaitCaught(moved, head)) return moved;
     satiety += 1;
-    flashes = [
-      ...flashes,
-      { x: moved.x, y: moved.y, bornAt: elapsedMs, small: true },
-    ];
+    flashes = [...flashes, { x: moved.x, y: moved.y, bornAt: elapsedMs }];
     const newBaseY =
       BAIT_MIN_BASE_Y + random() * (BAIT_MAX_BASE_Y - BAIT_MIN_BASE_Y);
     return respawnBait(moved, hero.x, newBaseY);
@@ -51,19 +50,21 @@ export function stepWorld(state: GameState, random: () => number): GameState {
     satiety = 0;
     if (residents.length < RESIDENT_MAX) {
       const baseY = clamp(hero.y, RESIDENT_MIN_BASE_Y, RESIDENT_MAX_BASE_Y);
+      const species = nextBirthSpecies(residents.length);
       const born: Resident = {
-        species: nextBirthSpecies(residents.length),
+        species,
         x: hero.x,
         baseY,
         y: baseY,
         dir: random() < 0.5 ? -1 : 1,
-        phase: random() * 6,
+        // 演出明け（bornAtMs + BIRTH_FX_TOTAL_MS）に sin 項が 0 になる位相。
+        // 演出中は y=baseY で静止するため、復帰時の y 飛びを防ぐ
+        phase:
+          -(elapsedMs + BIRTH_FX_TOTAL_MS) *
+          SPECIES_MOTION[species].bobFrequency,
+        bornAtMs: elapsedMs,
       };
       residents = [...residents, born];
-      flashes = [
-        ...flashes,
-        { x: hero.x, y: hero.y, bornAt: elapsedMs, small: false },
-      ];
     }
   }
 
