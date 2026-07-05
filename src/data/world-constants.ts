@@ -20,8 +20,8 @@ export const INPUT_MIN_Y = 6;
 export const INPUT_MAX_Y = WORLD_HEIGHT - 8;
 
 /** 推進・水流・抗力 */
-export const BASE_THRUST = 0.02;
-export const STROKE_THRUST = 0.07;
+export const BASE_THRUST = 0.013;
+export const STROKE_THRUST = 0.045;
 export const STROKE_CYCLE_MS = 900;
 export const STROKE_ACTIVE_MS = 360;
 export const DRAG = 0.96;
@@ -29,7 +29,7 @@ export const DRAG = 0.96;
  * 水流（+x 方向）。設計原則: 水流の終端速度 < 主人公の持続推進。
  * これを破ると左移動不能になりリング世界が壊れる
  */
-export const CURRENT_VX = 0.012;
+export const CURRENT_VX = 0.008;
 /** 向き反転のしきい値（|vx| がこれを超えたら向きを更新） */
 export const FACING_FLIP_SPEED = 0.05;
 export const HERO_MIN_Y = 10;

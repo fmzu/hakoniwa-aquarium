@@ -6,20 +6,20 @@ const still = (): Hero => ({ x: 80, y: 60, vx: 0, vy: 0, facing: -1 });
 
 test("path が空でも水流で +x に流される", () => {
   const { hero } = stepHero(still(), [], false);
-  expect(hero.vx).toBeCloseTo(0.01152, 5); // (0 + 0.012) * 0.96
-  expect(hero.x).toBeCloseTo(80.01152, 5);
+  expect(hero.vx).toBeCloseTo(0.00768, 5); // (0 + 0.008) * 0.96
+  expect(hero.x).toBeCloseTo(80.00768, 5);
 });
 
-test("ウェイポイントに向かって推進する（滑空時 0.02）", () => {
+test("ウェイポイントに向かって推進する（滑空時 0.013）", () => {
   const { hero, path } = stepHero(still(), [{ x: 120, y: 60 }], false);
-  expect(hero.vx).toBeCloseTo(0.03072, 5); // (0.02 + 0.012) * 0.96
+  expect(hero.vx).toBeCloseTo(0.02016, 5); // (0.013 + 0.008) * 0.96
   expect(hero.vy).toBeCloseTo(0, 5);
   expect(path.length).toBe(1); // まだ到達していない
 });
 
-test("掻きフレームは +0.07 のバーストが乗る", () => {
+test("掻きフレームは +0.045 のバーストが乗る", () => {
   const { hero } = stepHero(still(), [{ x: 120, y: 60 }], true);
-  expect(hero.vx).toBeCloseTo(0.09792, 5); // (0.02 + 0.07 + 0.012) * 0.96
+  expect(hero.vx).toBeCloseTo(0.06336, 5); // (0.013 + 0.045 + 0.008) * 0.96
 });
 
 test("ウェイポイントから 5px 未満に来たら消費する", () => {
@@ -36,7 +36,7 @@ test("向きは vx の符号で反転する", () => {
 
 test("|vx| が小さいときは向きを保つ", () => {
   const { hero } = stepHero({ ...still(), facing: 1 }, [], false);
-  expect(hero.facing).toBe(1); // vx = 0.01152 < 0.05
+  expect(hero.facing).toBe(1); // vx = 0.00768 < 0.05
 });
 
 test("x は torus で折り返す", () => {

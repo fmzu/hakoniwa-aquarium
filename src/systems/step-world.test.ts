@@ -36,7 +36,7 @@ test("経過時間が TICK_MS だけ進む", () => {
 test("頭の近くの餌を食べると満腹 +1 し、餌は反対側にリスポーンする", () => {
   const next = stepWorld(stateWithBaitAtHead(), fixedRandom);
   expect(next.satiety).toBe(1);
-  expect(next.baits[0].x).toBeCloseTo(340.01152, 3); // mod(hero.x + 240, 480)
+  expect(next.baits[0].x).toBeCloseTo(340.00768, 3); // mod(hero.x + 240, 480)
   expect(next.baits[0].baseY).toBe(74); // 28 + 0.5 * 92
   expect(next.flashes.length).toBe(1);
   expect(next.flashes[0].small).toBe(true);
