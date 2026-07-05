@@ -44,3 +44,32 @@ test("x は torus で折り返す", () => {
   };
   expect(stepResident(fish, 0).x).toBeCloseTo(0.15, 5);
 });
+
+test("誕生演出中は移動も揺れもしない", () => {
+  const newborn: Resident = {
+    species: "ramuneFish",
+    x: 100,
+    baseY: 60,
+    y: 60,
+    dir: 1,
+    phase: 0,
+    bornAtMs: 0,
+  };
+  const next = stepResident(newborn, 1000);
+  expect(next.x).toBe(100);
+  expect(next.y).toBe(60);
+});
+
+test("演出時間（2500ms）経過後は通常挙動に戻る", () => {
+  const newborn: Resident = {
+    species: "ramuneFish",
+    x: 100,
+    baseY: 60,
+    y: 60,
+    dir: 1,
+    phase: 0,
+    bornAtMs: 0,
+  };
+  const next = stepResident(newborn, 2500);
+  expect(next.x).toBe(100.25);
+});
