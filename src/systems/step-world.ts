@@ -56,9 +56,12 @@ export function stepWorld(state: GameState, random: () => number): GameState {
     stepResident(resident, elapsedMs),
   );
   if (satiety >= SATIETY_MAX) {
-    // 同tick複数捕食の超過分は意図的に切り捨て（docs/spec.md 決定ログ参照）
-    // 満員でも満腹はリセットする（意図的な仕様。docs/spec.md 決定ログ参照）
-    satiety = 0;
+    // 同tick複数捕食の超過分は次の誕生へ繰り越す（docs/spec.md 決定ログ参照）
+    // 満員で誕生しない場合も同様に繰り越す（docs/spec.md 決定ログ参照）
+    // 安全性: BAIT_COUNT=3 より 1 tick の最大加算は 3 → 繰り越しは最大 2 で
+    // SATIETY_MAX(5) に届かず、二重誕生は構造的に不可能。
+    // セレモニー中は捕食無効なので誕生の連鎖も起きない
+    satiety -= SATIETY_MAX;
     if (residents.length < RESIDENT_MAX) {
       const baseY = clamp(hero.y, RESIDENT_MIN_BASE_Y, RESIDENT_MAX_BASE_Y);
       const species = nextBirthSpecies(residents.length);

@@ -82,6 +82,50 @@ test("誕生順は固定テーブルをループする（2 体目はストロベ
   expect(next.residents[1].species).toBe("strawberryJelly");
 });
 
+test("満腹 4 で同 tick に 2 匹捕食すると 1 体誕生し、超過分 1 が繰り越される", () => {
+  // 頭の真横に同一条件の餌を 2 つ置き、同 tick に両方捕食させる（4+2=6）
+  const secondBait: Bait = {
+    x: 88,
+    baseY: 54,
+    y: 54,
+    dir: 1,
+    phase: -(TICK_MS * 0.002),
+  };
+  const base = stateWithBaitAtHead({ satiety: 4 });
+  const next = stepWorld(
+    { ...base, baits: [...base.baits, secondBait] },
+    fixedRandom,
+  );
+  expect(next.residents.length).toBe(1);
+  expect(next.satiety).toBe(1); // 6 - SATIETY_MAX。切り捨てず繰り越す
+});
+
+test("満員時も満腹 4 + 同 tick 2 匹捕食の超過分 1 は繰り越される（誕生はしない）", () => {
+  const full: Resident[] = Array.from({ length: 8 }, (_, i) => ({
+    species: "ramuneFish" as const,
+    x: 200 + i * 20,
+    baseY: 60,
+    y: 60,
+    dir: 1 as const,
+    phase: 0,
+    bornAtMs: -10000,
+  }));
+  const secondBait: Bait = {
+    x: 88,
+    baseY: 54,
+    y: 54,
+    dir: 1,
+    phase: -(TICK_MS * 0.002),
+  };
+  const base = stateWithBaitAtHead({ satiety: 4, residents: full });
+  const next = stepWorld(
+    { ...base, baits: [...base.baits, secondBait] },
+    fixedRandom,
+  );
+  expect(next.residents.length).toBe(8);
+  expect(next.satiety).toBe(1); // 満員でも超過分の繰り越しは同じ
+});
+
 test("住民 8 体で満員のときは満腹がリセットされるだけで誕生しない", () => {
   const full: Resident[] = Array.from({ length: 8 }, (_, i) => ({
     species: "ramuneFish" as const,
