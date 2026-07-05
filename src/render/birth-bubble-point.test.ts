@@ -34,3 +34,14 @@ test("index 3 の 900ms 時点（決定性の固定値検証）", () => {
 test("同じ入力は常に同じ出力（決定的）", () => {
   expect(birthBubblePoint(5, 777)).toEqual(birthBubblePoint(5, 777));
 });
+
+test("泡は時間とともに単調上昇する（late.dy < early.dy）", () => {
+  for (let index = 0; index < 8; index++) {
+    for (let ms = index * 90; ms + 200 <= 2300; ms += 200) {
+      const early = birthBubblePoint(index, ms);
+      const late = birthBubblePoint(index, ms + 200);
+      if (early === null || late === null) throw new Error("出現済みのはず");
+      expect(late.dy).toBeLessThan(early.dy);
+    }
+  }
+});

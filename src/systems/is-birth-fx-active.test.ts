@@ -21,3 +21,7 @@ test("途中誕生でも bornAtMs 基準で判定される", () => {
   expect(isBirthFxActive(1000, 2000)).toBe(true);
   expect(isBirthFxActive(1000, 3500)).toBe(false);
 });
+
+test("未来生まれ（bornAtMs > elapsedMs）は false", () => {
+  expect(isBirthFxActive(1000, 500)).toBe(false);
+});

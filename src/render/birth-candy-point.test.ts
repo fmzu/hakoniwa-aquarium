@@ -24,3 +24,15 @@ test("index 3 進行 1: 決定性の固定値検証", () => {
 test("同じ入力は常に同じ出力（決定的）", () => {
   expect(birthCandyPoint(7, 0.3)).toEqual(birthCandyPoint(7, 0.3));
 });
+
+test("進行度が増えると中心からの距離が増える", () => {
+  for (let index = 0; index < 10; index++) {
+    const near = birthCandyPoint(index, 0);
+    const mid = birthCandyPoint(index, 0.5);
+    const far = birthCandyPoint(index, 1);
+    expect(Math.hypot(mid.x, mid.y)).toBeGreaterThan(
+      Math.hypot(near.x, near.y),
+    );
+    expect(Math.hypot(far.x, far.y)).toBeGreaterThan(Math.hypot(mid.x, mid.y));
+  }
+});

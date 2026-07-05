@@ -2,6 +2,8 @@ import {
   BIRTH_FX_BUBBLE_DELAY_MS,
   BIRTH_FX_BUBBLE_RISE_PER_MS,
   BIRTH_FX_BUBBLE_START_DY,
+  BIRTH_FX_BUBBLE_SWAY_AMP,
+  BIRTH_FX_BUBBLE_SWAY_FREQ,
 } from "../data/birth-fx-constants";
 
 export type BubblePoint = {
@@ -25,7 +27,10 @@ export function birthBubblePoint(
   const age = msSinceBirth - index * BIRTH_FX_BUBBLE_DELAY_MS;
   if (age < 0) return null;
   const baseDx = ((index * 29) % 13) - 6;
-  const sway = Math.round(Math.sin(age * 0.006 + index) * 1.5);
+  const sway = Math.round(
+    Math.sin(age * BIRTH_FX_BUBBLE_SWAY_FREQ + index) *
+      BIRTH_FX_BUBBLE_SWAY_AMP,
+  );
   return {
     dx: baseDx + sway,
     dy:
