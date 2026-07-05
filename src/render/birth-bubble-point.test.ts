@@ -1,4 +1,8 @@
 import { expect, test } from "bun:test";
+import {
+  BIRTH_FX_BUBBLE_DELAY_MS,
+  BIRTH_FX_RING_END_MS,
+} from "../data/birth-fx-constants";
 import { birthBubblePoint } from "./birth-bubble-point";
 
 test("index 0 は遅延なしで出現。開始位置は中心の 8px 下", () => {
@@ -37,7 +41,11 @@ test("同じ入力は常に同じ出力（決定的）", () => {
 
 test("泡は時間とともに単調上昇する（late.dy < early.dy）", () => {
   for (let index = 0; index < 8; index++) {
-    for (let ms = index * 90; ms + 200 <= 2300; ms += 200) {
+    for (
+      let ms = index * BIRTH_FX_BUBBLE_DELAY_MS;
+      ms + 200 <= BIRTH_FX_RING_END_MS;
+      ms += 200
+    ) {
       const early = birthBubblePoint(index, ms);
       const late = birthBubblePoint(index, ms + 200);
       if (early === null || late === null) throw new Error("出現済みのはず");

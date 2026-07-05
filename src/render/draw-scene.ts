@@ -1,3 +1,4 @@
+import { BIRTH_FX_RING_MAX_RADIUS } from "../data/birth-fx-constants";
 import { RESIDENT_SPRITES } from "../data/resident-sprites";
 import { nessieSprite } from "../data/sprites/nessie";
 import { shadowFishSprite } from "../data/sprites/shadow-fish";
@@ -55,11 +56,15 @@ export function drawScene(
 
   for (const resident of state.residents) {
     const x = torusDistance(resident.x, camX, WORLD_WIDTH);
-    if (x < -18 || x > VIEW_WIDTH + 4) continue;
     if (isBirthFxActive(resident.bornAtMs, state.elapsedMs)) {
+      // 演出はリング＋キャンディ粒がスプライトより広がるため、
+      // カリングマージンも演出の最大半径＋余白に合わせて左右対称に広く取る
+      const margin = BIRTH_FX_RING_MAX_RADIUS + 4;
+      if (x < -margin || x > VIEW_WIDTH + margin) continue;
       birthing.push({ resident, screenX: x });
       continue;
     }
+    if (x < -18 || x > VIEW_WIDTH + 4) continue;
     const sprite = RESIDENT_SPRITES[resident.species];
     // frameIntervalMs === 0（1 フレームのスプライト）は mod(x, 0) = NaN になるためガードする
     const frameIndex =
@@ -102,25 +107,27 @@ export function drawScene(
     );
   }
 
-  // 誕生演出: 均一暗転 → その上に新入り＋演出（同時複数誕生時は最も濃い暗転を 1 回だけ描く）
-  if (birthing.length > 0) {
-    let darkenAlpha = 0;
-    for (const b of birthing) {
-      darkenAlpha = Math.max(
-        darkenAlpha,
-        birthFxPhase(state.elapsedMs - b.resident.bornAtMs).darkenAlpha,
-      );
-    }
-    drawDarkenOverlay(ctx, darkenAlpha);
-    for (const b of birthing) {
-      drawBirthFx(
-        ctx,
-        b.resident,
-        state.elapsedMs,
-        b.screenX,
-        b.resident.y - camY,
-      );
-    }
+  // 誕生演出: 均一暗転 → その上に新入り＋演出（同時複数誕生時は最も濃い暗転を 1 回だけ描く）。
+  // 暗転は画面全体に均一なので、カリングとは無関係に全住民から計算する。
+  // 主人公が誕生地点から泳ぎ去って新入りが画面外になっても、
+  // 演出時間中は暗転がフェードアウトまで滑らかに継続する
+  let darkenAlpha = 0;
+  for (const r of state.residents) {
+    if (!isBirthFxActive(r.bornAtMs, state.elapsedMs)) continue;
+    darkenAlpha = Math.max(
+      darkenAlpha,
+      birthFxPhase(state.elapsedMs - r.bornAtMs).darkenAlpha,
+    );
+  }
+  drawDarkenOverlay(ctx, darkenAlpha);
+  for (const b of birthing) {
+    drawBirthFx(
+      ctx,
+      b.resident,
+      state.elapsedMs,
+      b.screenX,
+      b.resident.y - camY,
+    );
   }
 
   // HUD: 満腹ピップ（暗転の影響を受けないよう最後に描く）
