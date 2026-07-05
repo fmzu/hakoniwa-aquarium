@@ -33,3 +33,7 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: Retry deploy（Pages側の一時エラー対策）
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4
