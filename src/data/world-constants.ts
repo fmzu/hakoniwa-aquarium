@@ -56,6 +56,9 @@ export const RESIDENT_MAX_BASE_Y = 118;
 
 /** 演出 */
 export const FLASH_DURATION_MS = 600;
+/** 捕食リング（ドット）の開始半径と拡大量 */
+export const FLASH_BASE_RADIUS = 3;
+export const FLASH_GROW_RADIUS = 5;
 
 /** 背景 */
 export const SAND_TOP_Y = 150;
