@@ -43,6 +43,7 @@ export function stepWorld(state: GameState, random: () => number): GameState {
 
   const baits = state.baits.map((bait) => {
     const moved = stepBait(bait, elapsedMs);
+    // セレモニー中は捕食判定を無効にする（意図的な仕様。docs/spec.md 決定ログ参照）
     if (ceremony || !isBaitCaught(moved, head)) return moved;
     satiety += 1;
     flashes = [...flashes, { x: moved.x, y: moved.y, bornAt: elapsedMs }];
@@ -55,6 +56,8 @@ export function stepWorld(state: GameState, random: () => number): GameState {
     stepResident(resident, elapsedMs),
   );
   if (satiety >= SATIETY_MAX) {
+    // 同tick複数捕食の超過分は意図的に切り捨て（docs/spec.md 決定ログ参照）
+    // 満員でも満腹はリセットする（意図的な仕様。docs/spec.md 決定ログ参照）
     satiety = 0;
     if (residents.length < RESIDENT_MAX) {
       const baseY = clamp(hero.y, RESIDENT_MIN_BASE_Y, RESIDENT_MAX_BASE_Y);
