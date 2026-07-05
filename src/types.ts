@@ -19,7 +19,7 @@ export type Bait = {
   phase: number;
 };
 
-export type SpeciesId = "ramuneFish" | "strawberryJelly";
+export type SpeciesId = "ramuneFish" | "strawberryJelly" | "taiyaki";
 
 export type Resident = {
   species: SpeciesId;

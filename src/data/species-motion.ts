@@ -12,4 +12,5 @@ type Motion = {
 export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
   ramuneFish: { speed: 0.25, bobAmplitude: 4, bobFrequency: 0.0015 },
   strawberryJelly: { speed: 0.1, bobAmplitude: 5, bobFrequency: 0.001 },
+  taiyaki: { speed: 0.18, bobAmplitude: 3, bobFrequency: 0.0012 },
 };

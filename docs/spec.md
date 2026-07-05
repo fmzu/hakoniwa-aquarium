@@ -138,7 +138,7 @@
 - `noUncheckedIndexedAccess` 導入 + undefined ガード
 - bobY 抽出（餌・住民の上下揺れ計算の共通化）
 - nextBirthSpecies の負数ガード
-- BIRTH_TABLE 網羅テスト
+- BIRTH_TABLE 網羅テスト → 実装済み（2026-07-05、`src/data/birth-table.test.ts`）
 - pointerup の isPrimary ガード
 - 住民カリングの対称化
 - 背景グラデーションのキャッシュ

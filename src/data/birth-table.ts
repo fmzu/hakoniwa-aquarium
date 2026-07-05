@@ -4,4 +4,5 @@ import type { SpeciesId } from "../types";
 export const BIRTH_TABLE: readonly SpeciesId[] = [
   "ramuneFish",
   "strawberryJelly",
+  "taiyaki",
 ];
