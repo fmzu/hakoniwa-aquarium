@@ -1572,6 +1572,8 @@ git commit -m "feat: draw-scene に誕生演出（暗転→新入り＋演出）
 
 ### Task 14: 実機確認（dev サーバー + ヘッドレススクショ）
 
+> **注記（2026-07-05 実機確認で判明）**: Step 3 の `--virtual-time-budget` 方式は、ヘッドレス Chrome で rAF がほぼ発火せず機能しない。フェーズごとの撮影には実時間撮影スクリプト `~/.workspace/aquarium-smoke/birth-shots.js` を使うこと。
+
 満腹 5 まで実際に食べさせるのはヘッドレスでは困難なので、main.ts に検証用の新入りを一時注入して起動直後に演出を再生させる。**この変更はコミット禁止。確認後に必ず revert する。**
 
 **Files:**

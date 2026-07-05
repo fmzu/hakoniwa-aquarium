@@ -146,10 +146,14 @@
 - スプライト描画オフセットの width/height 導出化
 - nessie.frameIntervalMs のデッドデータ解消
 - E2E 最小スモーク
+- birthFxPhase が誕生中住民1体につき毎フレーム2回呼ばれる（birthing に fx を持たせて解消可）
+- draw-scene の誕生ブロックの draw-birth-layer.ts への抽出
+- ringDotOffsets のメモ化
+- step-world の誕生 phase の 2π 剰余正規化
 
 機能追加:
 
-- 誕生演出の本実装（最優先の投資先。現状プレースホルダ）→ 設計済み: docs/design/2026-07-05-birth-effect.md
+- 誕生演出の本実装 → 実装済み（2026-07-05）。設計: docs/design/2026-07-05-birth-effect.md
 - 図鑑UI
 - セーブ（localStorage）
 - 滞在スケジューラ
