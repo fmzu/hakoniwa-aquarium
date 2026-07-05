@@ -1,7 +1,6 @@
+import { RESIDENT_SPRITES } from "../data/resident-sprites";
 import { nessieSprite } from "../data/sprites/nessie";
-import { ramuneFishSprite } from "../data/sprites/ramune-fish";
 import { shadowFishSprite } from "../data/sprites/shadow-fish";
-import { strawberryJellySprite } from "../data/sprites/strawberry-jelly";
 import {
   FLASH_BASE_RADIUS,
   FLASH_DURATION_MS,
@@ -13,16 +12,12 @@ import {
 import { isStrokePhase } from "../engine/is-stroke-phase";
 import { mod } from "../engine/mod";
 import { torusDistance } from "../engine/torus-distance";
-import type { GameState, SpeciesId, Sprite } from "../types";
+import type { GameState } from "../types";
 import { drawBackground } from "./draw-background";
 import { drawGrid } from "./draw-grid";
 import { drawPath } from "./draw-path";
 import { drawRingDots } from "./draw-ring-dots";
-
-const RESIDENT_SPRITES: Record<SpeciesId, Sprite> = {
-  ramuneFish: ramuneFishSprite,
-  strawberryJelly: strawberryJellySprite,
-};
+import { isResidentFlipped } from "./is-resident-flipped";
 
 /** 1 フレームぶんの描画。背景 → 道のり → 餌 → 住民 → 主人公 → 捕食リング → 満腹ピップ */
 export function drawScene(
@@ -58,15 +53,13 @@ export function drawScene(
       mod(state.elapsedMs, sprite.frameIntervalMs * 2) < sprite.frameIntervalMs
         ? 0
         : 1;
-    // クラゲは左右対称なので反転しない。魚は進行方向で鏡像
-    const flip = resident.species === "ramuneFish" && resident.dir > 0;
     drawGrid(
       ctx,
       sprite.frames[frameIndex],
       sprite.palette,
       x - 8,
       resident.y - camY - 8,
-      flip,
+      isResidentFlipped(resident),
     );
   }
 
