@@ -8,6 +8,7 @@ import { drawScene } from "./render/draw-scene";
 import { loadSave } from "./save/load-save";
 import { storeSave } from "./save/store-save";
 import { updateZukan } from "./save/update-zukan";
+import { detectBornResident } from "./systems/detect-born-resident";
 import { restoreStateFromSave } from "./systems/restore-state-from-save";
 import { stepWorld } from "./systems/step-world";
 import { attachZukanUi } from "./ui/attach-zukan-ui";
@@ -37,15 +38,16 @@ attachPointerInput(canvas, getCamera, (point, isStart) => {
 const advance = createFixedTimestep(TICK_MS, MAX_TICKS_PER_FRAME, () => {
   const prev = state;
   state = stepWorld(state, Math.random);
-  // 誕生検知: 住民は増えるだけ（退出なし）なので length 増加 = 誕生。
-  // 1 tick で複数誕生は構造的に不可能（step-world の繰り越しコメント参照）
-  if (state.residents.length > prev.residents.length) {
-    const born = state.residents[state.residents.length - 1];
+  // 誕生検知は bornAtMs === elapsedMs で行う（1 tick で複数誕生は
+  // 構造的に不可能。step-world の繰り越しコメント参照）
+  const born = detectBornResident(state.residents, state.elapsedMs);
+  if (born) {
     // 現実時刻の取得は境界層のここでだけ行う（純粋関数には ISO 文字列で渡す）
     zukan = updateZukan(zukan, born.species, new Date().toISOString());
-    storeSave({ version: 1, zukan, satiety: state.satiety });
-  } else if (state.satiety !== prev.satiety) {
-    // 捕食（満腹変化）でも自動保存。変化のない tick では書き込まない
+  }
+  // 誕生・捕食（満腹変化）のあった tick だけ自動保存する。
+  // 保存は tick 完了後の state のみ対象（中間状態は保存しない）
+  if (born || state.satiety !== prev.satiety) {
     storeSave({ version: 1, zukan, satiety: state.satiety });
   }
 });

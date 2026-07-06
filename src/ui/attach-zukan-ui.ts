@@ -24,4 +24,8 @@ export function attachZukanUi(getZukan: () => Zukan): void {
     // 背景（パネル自身）のクリックでも閉じる。カード上のクリックは閉じない
     if (event.target === panel) panel.hidden = true;
   });
+  document.addEventListener("keydown", (event) => {
+    // ダイアログの標準操作にならい Escape でも閉じる（開いていないときは何もしない）
+    if (event.key === "Escape" && !panel.hidden) panel.hidden = true;
+  });
 }

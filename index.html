@@ -56,9 +56,14 @@
         color: #eaf8ff;
         font-family: system-ui, sans-serif;
         text-align: center;
+        max-width: min(90vw, 480px);
+        max-height: 85vh;
+        overflow-y: auto;
       }
       #zukan-cards {
         display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 12px;
         margin-bottom: 12px;
       }
@@ -105,7 +110,7 @@
     ></canvas>
     <button id="zukan-button" type="button">ずかん</button>
     <div id="zukan-panel" hidden>
-      <div id="zukan-window">
+      <div id="zukan-window" role="dialog" aria-modal="true" aria-label="ずかん">
         <div id="zukan-cards"></div>
         <button id="zukan-close" type="button">とじる</button>
       </div>
