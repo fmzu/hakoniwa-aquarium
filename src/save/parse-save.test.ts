@@ -64,6 +64,111 @@ test("satiety が不正（範囲外・非整数・型違い）なら初期セー
   );
 });
 
+test("satiety の境界値 0 と 4（SATIETY_MAX - 1）は受理される", () => {
+  expect(parseSave(JSON.stringify({ ...validSave, satiety: 0 }))).toEqual({
+    ...validSave,
+    satiety: 0,
+  });
+  expect(parseSave(JSON.stringify({ ...validSave, satiety: 4 }))).toEqual({
+    ...validSave,
+    satiety: 4,
+  });
+});
+
+test("firstDiscoveredAt が日付として解釈できない文字列なら初期セーブになる", () => {
+  expect(
+    parseSave(
+      JSON.stringify({
+        version: 1,
+        satiety: 0,
+        zukan: {
+          ramuneFish: { firstDiscoveredAt: "not-a-date", birthCount: 1 },
+        },
+      }),
+    ),
+  ).toEqual(createInitialSave());
+});
+
+test("birthCount の境界値 1 は受理される", () => {
+  const save: SaveData = {
+    version: 1,
+    zukan: {
+      ramuneFish: {
+        firstDiscoveredAt: "2026-07-06T10:00:00.000Z",
+        birthCount: 1,
+      },
+    },
+    satiety: 0,
+  };
+  expect(parseSave(serializeSave(save))).toEqual(save);
+});
+
+test("birthCount が Number.MAX_SAFE_INTEGER を超えると初期セーブになる", () => {
+  expect(
+    parseSave(
+      JSON.stringify({
+        version: 1,
+        satiety: 0,
+        zukan: {
+          ramuneFish: {
+            firstDiscoveredAt: "2026-07-06T10:00:00.000Z",
+            birthCount: 2 ** 53,
+          },
+        },
+      }),
+    ),
+  ).toEqual(createInitialSave());
+});
+
+test("zukan エントリが配列なら初期セーブになる", () => {
+  expect(
+    parseSave(
+      JSON.stringify({ version: 1, satiety: 0, zukan: { ramuneFish: [] } }),
+    ),
+  ).toEqual(createInitialSave());
+});
+
+test("zukan の __proto__ キーは初期セーブになる（プロトタイプ汚染を防ぐ）", () => {
+  expect(
+    parseSave(
+      '{"version":1,"satiety":0,"zukan":{"__proto__":{"firstDiscoveredAt":"2026-07-06T10:00:00.000Z","birthCount":1}}}',
+    ),
+  ).toEqual(createInitialSave());
+});
+
+test("未知の余剰フィールドは出力に持ち込まれない", () => {
+  // トップレベルの余剰フィールドは捨てられる
+  expect(parseSave(JSON.stringify({ ...validSave, extra: "x" }))).toEqual(
+    validSave,
+  );
+  // zukan エントリ内の余剰フィールドも捨てられる
+  const expected: SaveData = {
+    version: 1,
+    zukan: {
+      ramuneFish: {
+        firstDiscoveredAt: "2026-07-06T10:00:00.000Z",
+        birthCount: 1,
+      },
+    },
+    satiety: 0,
+  };
+  expect(
+    parseSave(
+      JSON.stringify({
+        version: 1,
+        satiety: 0,
+        zukan: {
+          ramuneFish: {
+            firstDiscoveredAt: "2026-07-06T10:00:00.000Z",
+            birthCount: 1,
+            extra: "x",
+          },
+        },
+      }),
+    ),
+  ).toEqual(expected);
+});
+
 test("zukan 欠損・未知の種キー・不正エントリは初期セーブになる", () => {
   expect(parseSave(JSON.stringify({ version: 1, satiety: 0 }))).toEqual(
     createInitialSave(),

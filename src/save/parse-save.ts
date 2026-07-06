@@ -44,17 +44,21 @@ export function parseSave(raw: string | null): SaveData {
     if (!(SPECIES_IDS as readonly string[]).includes(key)) {
       return createInitialSave();
     }
-    if (typeof value !== "object" || value === null) {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
       return createInitialSave();
     }
     const entry = value as Record<string, unknown>;
-    if (typeof entry.firstDiscoveredAt !== "string") {
+    if (
+      typeof entry.firstDiscoveredAt !== "string" ||
+      Number.isNaN(Date.parse(entry.firstDiscoveredAt))
+    ) {
       return createInitialSave();
     }
     if (
       typeof entry.birthCount !== "number" ||
       !Number.isInteger(entry.birthCount) ||
-      entry.birthCount < 1
+      entry.birthCount < 1 ||
+      entry.birthCount > Number.MAX_SAFE_INTEGER
     ) {
       return createInitialSave();
     }
