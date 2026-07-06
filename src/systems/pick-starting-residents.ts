@@ -1,3 +1,4 @@
+import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
 import { SPECIES_IDS } from "../data/species-ids";
 import {
   RESIDENT_MAX_BASE_Y,
@@ -10,8 +11,9 @@ import type { Resident, Zukan } from "../types";
 /**
  * 起動時の海の抽選。発見済みの種からランダムに最大 STARTING_RESIDENT_MAX 体
  * （種の重複なし）を生成する。乱数は注入（テスト決定性）。
- * bornAtMs は十分過去の値（-10000）にして誕生演出を再生しない。
+ * bornAtMs は十分過去の値にして誕生演出を再生しない。
  * 将来の滞在スケジューラはこの関数の置き換えで実現する
+ * @param random - [0, 1) を返す乱数（Math.random 互換）
  */
 export function pickStartingResidents(
   zukan: Zukan,
@@ -32,7 +34,8 @@ export function pickStartingResidents(
       y: baseY,
       dir: random() < 0.5 ? -1 : 1,
       phase: random() * 6,
-      bornAtMs: -10000,
+      // 演出窓の外に置く（定数変更に追従）
+      bornAtMs: -BIRTH_FX_TOTAL_MS,
     });
   }
   return residents;
