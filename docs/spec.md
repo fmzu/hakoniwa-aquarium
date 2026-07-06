@@ -177,12 +177,16 @@
 機能追加:
 
 - 誕生演出の本実装 → 実装済み（2026-07-05）。設計: docs/design/2026-07-05-birth-effect.md
-- 図鑑UI
-- セーブ（localStorage）
+- 図鑑UI → 設計済み: docs/design/2026-07-06-zukan-save.md
+- セーブ（localStorage） → 設計済み: docs/design/2026-07-06-zukan-save.md
 - 滞在スケジューラ
 - プロップ（ウエハース岩・金平糖等）
 - 回遊レア（LL級・目撃記録）
 - 図鑑の命名規則の決定（「お菓子名+魚種」型 or 完全創作名）
+
+インフラ:
+
+- Cloudflare Pages への移行（osushi の移行手順を流用）。タイミング: 図鑑＋セーブ完成直後・セーブで遊び込む前が締切（localStorage はオリジンに紐づくため移行でセーブが消える）
 
 ## リポジトリ
 
