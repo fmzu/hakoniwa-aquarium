@@ -65,3 +65,21 @@ export type Sprite = {
   /** 2 フレームアニメの切り替え間隔（ms）。アニメなしは 0 */
   frameIntervalMs: number;
 };
+
+/** 図鑑の 1 種ぶんの記録。将来の拡張（回遊レアの目撃など）はフィールド追加＋version 更新で行う */
+export type ZukanEntry = {
+  /** 初発見日時（ISO 8601 文字列）。現実時刻の取得は境界層（main.ts）でのみ行う */
+  firstDiscoveredAt: string;
+  /** 累計誕生数 */
+  birthCount: number;
+};
+
+/** 図鑑。未発見の種はキーごと存在しない */
+export type Zukan = Partial<Record<SpeciesId, ZukanEntry>>;
+
+/** localStorage に保存するセーブデータ全体。version はスキーマ番号（初版は 1） */
+export type SaveData = {
+  version: 1;
+  zukan: Zukan;
+  satiety: number;
+};
