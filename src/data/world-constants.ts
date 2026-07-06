@@ -62,3 +62,6 @@ export const FLASH_GROW_RADIUS = 5;
 
 /** 背景 */
 export const SAND_TOP_Y = 150;
+
+/** 起動時に図鑑（発見済みの種）から泳がせる住民の最大数 */
+export const STARTING_RESIDENT_MAX = 3;
