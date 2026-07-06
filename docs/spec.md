@@ -125,8 +125,11 @@
 
 ## データ永続化
 
-- M1では永続化なし
-- M2以降: localStorage に「図鑑の発見状態+常駐」のみ保存する
+- localStorage による自動セーブ実装済み（2026-07-06。設計: docs/design/2026-07-06-zukan-save.md）
+- 保存するもの: version（スキーマ番号）+ 図鑑（種→発見日・誕生数）+ 満腹ゲージ
+- 保存しないもの: 泳いでいる顔ぶれ・位置（顔ぶれは起動時に図鑑から抽選で生成する）
+- タイミング: 誕生・捕食のたびに自動保存。手動セーブなし
+- 常駐の保存は滞在スケジューラ実装時に追加予定
 
 ## 技術構成
 
@@ -173,12 +176,14 @@
 - ringDotOffsets のメモ化
 - step-world の誕生 phase の 2π 剰余正規化
 - is-resident-flipped の対称性をデータ駆動化（SPECIES_MOTION に mirrorsByDirection を追加し型網羅で新種の判断を強制）
+- 起動時の抽選住民が視界外に湧くことがある（復元されていないように見える余地。視界近傍へ寄せる案）
+- 図鑑カードの canvas に role=img と aria-label を付与
 
 機能追加:
 
 - 誕生演出の本実装 → 実装済み（2026-07-05）。設計: docs/design/2026-07-05-birth-effect.md
-- 図鑑UI → 設計済み: docs/design/2026-07-06-zukan-save.md
-- セーブ（localStorage） → 設計済み: docs/design/2026-07-06-zukan-save.md
+- 図鑑UI → 実装済み（2026-07-06）。設計: docs/design/2026-07-06-zukan-save.md
+- セーブ（localStorage） → 実装済み（2026-07-06）。設計: docs/design/2026-07-06-zukan-save.md
 - 滞在スケジューラ
 - プロップ（ウエハース岩・金平糖等）
 - 回遊レア（LL級・目撃記録）
