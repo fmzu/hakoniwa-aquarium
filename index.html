@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>海域</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap"
+      rel="stylesheet"
+    />
     <style>
       * {
         margin: 0;
@@ -29,12 +35,17 @@
         left: 50%;
         transform: translateX(-50%);
         padding: 8px 20px;
-        border: 1px solid #3e7ea6;
-        border-radius: 6px;
+        border: none;
+        /* 上下左右にずらした box-shadow で、角が1段欠けた階段状の枠にする */
+        box-shadow:
+          0 -2px 0 0 #3e7ea6,
+          0 2px 0 0 #3e7ea6,
+          -2px 0 0 0 #3e7ea6,
+          2px 0 0 0 #3e7ea6;
         background: rgba(9, 22, 33, 0.7);
         color: #eaf8ff;
-        font-family: system-ui, sans-serif;
-        font-size: 14px;
+        font-family: "DotGothic16", sans-serif;
+        font-size: 16px;
         cursor: pointer;
       }
       #zukan-panel {
@@ -50,11 +61,15 @@
       }
       #zukan-window {
         background: rgba(18, 39, 51, 0.92);
-        border: 1px solid #3e7ea6;
-        border-radius: 8px;
+        border: none;
+        box-shadow:
+          0 -3px 0 0 #3e7ea6,
+          0 3px 0 0 #3e7ea6,
+          -3px 0 0 0 #3e7ea6,
+          3px 0 0 0 #3e7ea6;
         padding: 16px;
         color: #eaf8ff;
-        font-family: system-ui, sans-serif;
+        font-family: "DotGothic16", sans-serif;
         text-align: center;
         max-width: min(90vw, 480px);
         max-height: 85vh;
@@ -70,8 +85,12 @@
       .zukan-card {
         width: 96px;
         padding: 8px;
-        border: 1px solid rgba(194, 231, 248, 0.3);
-        border-radius: 6px;
+        border: none;
+        box-shadow:
+          0 -2px 0 0 rgba(194, 231, 248, 0.3),
+          0 2px 0 0 rgba(194, 231, 248, 0.3),
+          -2px 0 0 0 rgba(194, 231, 248, 0.3),
+          2px 0 0 0 rgba(194, 231, 248, 0.3);
       }
       .zukan-sprite {
         width: 64px;
@@ -79,24 +98,29 @@
         image-rendering: pixelated;
       }
       .zukan-name {
-        font-size: 12px;
+        font-size: 13px;
         margin-top: 4px;
       }
       .zukan-meta {
-        font-size: 10px;
+        font-size: 11px;
+        line-height: 1.4;
         margin-top: 4px;
         color: #c2e7f8;
         white-space: pre-line;
-        min-height: 26px;
+        min-height: 31px;
       }
       #zukan-close {
         padding: 6px 16px;
-        border: 1px solid #3e7ea6;
-        border-radius: 6px;
+        border: none;
+        box-shadow:
+          0 -2px 0 0 #3e7ea6,
+          0 2px 0 0 #3e7ea6,
+          -2px 0 0 0 #3e7ea6,
+          2px 0 0 0 #3e7ea6;
         background: transparent;
         color: #eaf8ff;
-        font-family: system-ui, sans-serif;
-        font-size: 12px;
+        font-family: "DotGothic16", sans-serif;
+        font-size: 14px;
         cursor: pointer;
       }
     </style>
