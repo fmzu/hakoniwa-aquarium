@@ -29,24 +29,32 @@
         cursor: crosshair;
         display: block;
       }
+      /* canvas の CSS サイズにぴったり縮むラッパー。ボタンの絶対配置の基準になり、
+         リサイズで canvas が変わってもボタンが右上に自動追従する */
+      #game-wrap {
+        position: relative;
+        line-height: 0;
+      }
       #zukan-button {
-        position: fixed;
-        bottom: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 8px 20px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 0;
         border: none;
-        /* 上下左右にずらした box-shadow で、角が1段欠けた階段状の枠にする */
-        box-shadow:
-          0 -2px 0 0 #3e7ea6,
-          0 2px 0 0 #3e7ea6,
-          -2px 0 0 0 #3e7ea6,
-          2px 0 0 0 #3e7ea6;
-        background: rgba(9, 22, 33, 0.7);
-        color: #eaf8ff;
-        font-family: "DotGothic16", sans-serif;
-        font-size: 16px;
+        background: transparent;
+        line-height: 0;
         cursor: pointer;
+        opacity: 0.85;
+      }
+      #zukan-button:hover {
+        opacity: 1;
+        filter: brightness(1.15);
+      }
+      #zukan-icon {
+        width: 48px;
+        height: 44px;
+        image-rendering: pixelated;
+        display: block;
       }
       #zukan-panel {
         position: fixed;
@@ -126,13 +134,17 @@
     </style>
   </head>
   <body>
-    <canvas
-      id="game"
-      width="128"
-      height="90"
-      aria-label="海域。なぞって道のりを描くと主人公が線に沿って泳ぐ"
-    ></canvas>
-    <button id="zukan-button" type="button">ずかん</button>
+    <div id="game-wrap">
+      <canvas
+        id="game"
+        width="128"
+        height="90"
+        aria-label="海域。なぞって道のりを描くと主人公が線に沿って泳ぐ"
+      ></canvas>
+      <button id="zukan-button" type="button" aria-label="ずかん">
+        <canvas id="zukan-icon" width="12" height="11" aria-hidden="true"></canvas>
+      </button>
+    </div>
     <div id="zukan-panel" hidden>
       <div id="zukan-window" role="dialog" aria-modal="true" aria-label="ずかん">
         <div id="zukan-cards"></div>

@@ -12,6 +12,7 @@ import { detectBornResident } from "./systems/detect-born-resident";
 import { restoreStateFromSave } from "./systems/restore-state-from-save";
 import { stepWorld } from "./systems/step-world";
 import { attachZukanUi } from "./ui/attach-zukan-ui";
+import { renderZukanIcon } from "./ui/render-zukan-icon";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#game");
 if (!canvas) throw new Error("canvas #game が見つからない");
@@ -24,6 +25,7 @@ let zukan = save.zukan;
 let state = restoreStateFromSave(save, Math.random);
 
 attachZukanUi(() => zukan);
+renderZukanIcon();
 
 const getCamera = () => cameraPosition(state.hero.x, state.hero.y);
 
