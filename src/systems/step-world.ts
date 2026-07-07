@@ -86,5 +86,14 @@ export function stepWorld(state: GameState, random: () => number): GameState {
     }
   }
 
-  return { hero, path, baits, residents, flashes, satiety, elapsedMs };
+  return {
+    hero,
+    path,
+    baits,
+    residents,
+    flashes,
+    satiety,
+    elapsedMs,
+    nextVisitCheckMs: state.nextVisitCheckMs,
+  };
 }

@@ -33,4 +33,5 @@ test("餌・主人公・経過時間は初期状態と同じ", () => {
   expect(state.elapsedMs).toBe(0);
   expect(state.path).toEqual([]);
   expect(state.flashes).toEqual([]);
+  expect(state.nextVisitCheckMs).toBe(300000); // 保存対象外。毎セッション初期値から
 });

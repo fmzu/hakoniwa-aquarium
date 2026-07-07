@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { VISIT_INTERVAL_MS } from "../data/roster-constants";
 import { createInitialState } from "./create-initial-state";
 
 test("主人公は (80, 60) で左向き・静止から始まる", () => {
@@ -22,4 +23,9 @@ test("満腹 0・住民 0・path 空・経過時間 0 から始まる", () => {
   expect(state.path).toEqual([]);
   expect(state.flashes).toEqual([]);
   expect(state.elapsedMs).toBe(0);
+});
+
+test("次回来訪チェックは VISIT_INTERVAL_MS（ゲーム内 5 分後）から始まる", () => {
+  const state = createInitialState(() => 0.5);
+  expect(state.nextVisitCheckMs).toBe(VISIT_INTERVAL_MS);
 });

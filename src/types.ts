@@ -66,6 +66,11 @@ export type GameState = {
   satiety: number;
   /** ゲーム内経過時間（ms）。tick ごとに TICK_MS 加算。アニメ・揺れの位相に使う */
   elapsedMs: number;
+  /**
+   * 次回の来訪チェック時刻（ゲーム内 elapsedMs）。セーブしない
+   * （顔ぶれと同じく毎セッション初期化。到達すると VISIT_INTERVAL_MS 先へ進む）
+   */
+  nextVisitCheckMs: number;
 };
 
 export type Sprite = {

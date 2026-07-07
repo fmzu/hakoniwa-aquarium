@@ -1,3 +1,4 @@
+import { VISIT_INTERVAL_MS } from "../data/roster-constants";
 import {
   BAIT_COUNT,
   BAIT_MAX_BASE_Y,
@@ -28,5 +29,6 @@ export function createInitialState(random: () => number): GameState {
     flashes: [],
     satiety: 0,
     elapsedMs: 0,
+    nextVisitCheckMs: VISIT_INTERVAL_MS,
   };
 }
