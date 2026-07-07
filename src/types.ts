@@ -42,10 +42,10 @@ export type Resident = {
   bornAtMs: number;
   /**
    * 到着時刻（ゲーム内 elapsedMs）。来訪記録として保持する。
-   * 押し出し判定には使わない（最古参ルールは不採用。設計ドキュメント参照）
+   * 押し出し判定には使わない（最古参ルールは不採用。docs/design/2026-07-07-session-roster.md 参照）
    */
   arrivedAtMs: number;
-  /** 退場予定。真の住民は通常通り泳ぎ続け、視界外（余白込み）に出た瞬間に消える */
+  /** 退場予定フラグ。true の住民は通常通り泳ぎ続け、視界外（余白込み）に出た瞬間に消える */
   departing: boolean;
 };
 
