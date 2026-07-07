@@ -11,7 +11,7 @@
 
 ## 公開URL
 
-https://fmzu.github.io/hakoniwa-aquarium/
+https://hakoniwa-aquarium.pages.dev/
 
 ## 開発
 

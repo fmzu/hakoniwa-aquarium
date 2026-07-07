@@ -137,7 +137,7 @@
 - ランタイム: Bun（パッケージ管理・テストランナー）
 - ビルド: Vite + 素の Canvas 2D（フレームワーク・ゲームエンジン不使用）
 - lint/format: Biome
-- CI/CD: GitHub Actions（lint / tsc / test / build）→ GitHub Pages デプロイ
+- CI/CD: GitHub Actions（lint / tsc / test / build）→ Cloudflare Pages デプロイ（wrangler-action）
 - 一関数一ファイルを厳守。純粋関数（torus距離・深度lerp・誕生テーブル等）はすべて bun test でテストし、描画はテストしない
 
 ## テスト観点
@@ -191,10 +191,10 @@
 
 インフラ:
 
-- Cloudflare Pages への移行（osushi の移行手順を流用）。タイミング: 図鑑＋セーブ完成直後・セーブで遊び込む前が締切（localStorage はオリジンに紐づくため移行でセーブが消える）
+- Cloudflare Pages への移行 → 実施済み（2026-07-07）。デプロイ先: hakoniwa-aquarium.pages.dev、CI から wrangler-action でデプロイ
 
 ## リポジトリ
 
 https://github.com/fmzu/hakoniwa-aquarium
 
-公開URL: https://fmzu.github.io/hakoniwa-aquarium/
+公開URL: https://hakoniwa-aquarium.pages.dev/
