@@ -1,5 +1,4 @@
 import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
-import { SPECIES_IDS } from "../data/species-ids";
 import {
   RESIDENT_MAX_BASE_Y,
   RESIDENT_MIN_BASE_Y,
@@ -7,6 +6,7 @@ import {
   WORLD_WIDTH,
 } from "../data/world-constants";
 import type { Resident, Zukan } from "../types";
+import { discoveredSpecies } from "./discovered-species";
 
 /**
  * 起動時の海の抽選。発見済みの種からランダムに最大 STARTING_RESIDENT_MAX 体
@@ -19,7 +19,7 @@ export function pickStartingResidents(
   zukan: Zukan,
   random: () => number,
 ): Resident[] {
-  const pool = SPECIES_IDS.filter((id) => zukan[id] !== undefined);
+  const pool = discoveredSpecies(zukan);
   const count = Math.min(STARTING_RESIDENT_MAX, pool.length);
   const residents: Resident[] = [];
   for (let i = 0; i < count; i++) {
