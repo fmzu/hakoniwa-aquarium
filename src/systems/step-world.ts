@@ -1,5 +1,6 @@
 import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
 import { SPECIES_MOTION } from "../data/species-motion";
+import { SPECIES_SIZE } from "../data/species-size";
 import {
   BAIT_MAX_BASE_Y,
   BAIT_MIN_BASE_Y,
@@ -13,10 +14,12 @@ import {
 import { clamp } from "../engine/clamp";
 import { isStrokePhase } from "../engine/is-stroke-phase";
 import type { Flash, GameState, Resident } from "../types";
+import { countActiveResidents } from "./count-active-residents";
 import { headPosition } from "./head-position";
 import { isBaitCaught } from "./is-bait-caught";
 import { isCeremonyActive } from "./is-ceremony-active";
 import { nextBirthSpecies } from "./next-birth-species";
+import { pickDepartingIndex } from "./pick-departing-index";
 import { respawnBait } from "./respawn-bait";
 import { stepBait } from "./step-bait";
 import { stepHero } from "./step-hero";
@@ -57,33 +60,42 @@ export function stepWorld(state: GameState, random: () => number): GameState {
   );
   if (satiety >= SATIETY_MAX) {
     // 同tick複数捕食の超過分は次の誕生へ繰り越す（docs/spec.md 決定ログ参照）
-    // 満員で誕生しない場合も同様に繰り越す（docs/spec.md 決定ログ参照）
     // 安全性: BAIT_COUNT=3 より 1 tick の最大加算は 3 → 繰り越しは最大 2 で
     // SATIETY_MAX(5) に届かず、二重誕生は構造的に不可能。
     // セレモニー中は捕食無効なので誕生の連鎖も起きない
     satiety -= SATIETY_MAX;
-    if (residents.length < RESIDENT_MAX) {
-      const baseY = clamp(hero.y, RESIDENT_MIN_BASE_Y, RESIDENT_MAX_BASE_Y);
-      const species = nextBirthSpecies(residents.length);
-      const born: Resident = {
-        species,
-        x: hero.x,
-        baseY,
-        y: baseY,
-        dir: random() < 0.5 ? -1 : 1,
-        // 演出明け（bornAtMs + BIRTH_FX_TOTAL_MS）に sin 項が 0 になる位相。
-        // 演出中は y=baseY で静止するため、復帰時の y 飛びを防ぐ
-        phase:
-          -(elapsedMs + BIRTH_FX_TOTAL_MS) *
-          SPECIES_MOTION[species].bobFrequency,
-        bornAtMs: elapsedMs,
-        arrivedAtMs: elapsedMs,
-        departing: false,
-      };
-      residents = [...residents, born];
-      // セレモニー中はカメラ（主人公追従）を止め誕生地点にフォーカスするため即座に静止
-      hero = { ...hero, vx: 0, vy: 0 };
+    const species = nextBirthSpecies(residents.length);
+    // 満員（退場予定を除く実効数が上限）でも誕生する（押し出し方式。
+    // docs/spec.md 決定ログ 3 参照）。新生児と同サイズ階級から 1 体を退場予定にする。
+    // 新生児を配列に加える前に選ぶことで新生児自身を対象から除外する
+    if (countActiveResidents(residents) >= RESIDENT_MAX) {
+      const departingIndex = pickDepartingIndex(
+        residents,
+        SPECIES_SIZE[species],
+        random,
+      );
+      residents = residents.map((resident, index) =>
+        index === departingIndex ? { ...resident, departing: true } : resident,
+      );
     }
+    const baseY = clamp(hero.y, RESIDENT_MIN_BASE_Y, RESIDENT_MAX_BASE_Y);
+    const born: Resident = {
+      species,
+      x: hero.x,
+      baseY,
+      y: baseY,
+      dir: random() < 0.5 ? -1 : 1,
+      // 演出明け（bornAtMs + BIRTH_FX_TOTAL_MS）に sin 項が 0 になる位相。
+      // 演出中は y=baseY で静止するため、復帰時の y 飛びを防ぐ
+      phase:
+        -(elapsedMs + BIRTH_FX_TOTAL_MS) * SPECIES_MOTION[species].bobFrequency,
+      bornAtMs: elapsedMs,
+      arrivedAtMs: elapsedMs,
+      departing: false,
+    };
+    residents = [...residents, born];
+    // セレモニー中はカメラ（主人公追従）を止め誕生地点にフォーカスするため即座に静止
+    hero = { ...hero, vx: 0, vy: 0 };
   }
 
   return {
