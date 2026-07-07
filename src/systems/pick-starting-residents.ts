@@ -1,18 +1,17 @@
 import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
+import { ROSTER_MAX, ROSTER_MIN } from "../data/roster-constants";
 import {
   RESIDENT_MAX_BASE_Y,
   RESIDENT_MIN_BASE_Y,
-  STARTING_RESIDENT_MAX,
   WORLD_WIDTH,
 } from "../data/world-constants";
 import type { Resident, Zukan } from "../types";
 import { discoveredSpecies } from "./discovered-species";
 
 /**
- * 起動時の海の抽選。発見済みの種からランダムに最大 STARTING_RESIDENT_MAX 体
- * （種の重複なし）を生成する。乱数は注入（テスト決定性）。
- * bornAtMs は十分過去の値にして誕生演出を再生しない。
- * 将来の滞在スケジューラはこの関数の置き換えで実現する
+ * セッション開始時の顔ぶれ抽選。発見済みの種から ROSTER_MIN〜ROSTER_MAX 体
+ * （種の重複なし。発見数が少なければ発見数まで）を生成する。乱数は注入（テスト決定性）。
+ * 抽選数は最初の乱数 1 回で決める。bornAtMs は十分過去の値にして誕生演出を再生しない
  * @param random - [0, 1) を返す乱数（Math.random 互換）
  */
 export function pickStartingResidents(
@@ -20,7 +19,10 @@ export function pickStartingResidents(
   random: () => number,
 ): Resident[] {
   const pool = discoveredSpecies(zukan);
-  const count = Math.min(STARTING_RESIDENT_MAX, pool.length);
+  const count = Math.min(
+    ROSTER_MIN + Math.floor(random() * (ROSTER_MAX - ROSTER_MIN + 1)),
+    pool.length,
+  );
   const residents: Resident[] = [];
   for (let i = 0; i < count; i++) {
     const species = pool.splice(Math.floor(random() * pool.length), 1)[0];
