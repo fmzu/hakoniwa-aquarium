@@ -22,3 +22,9 @@ export const VISIT_SPAWN_MARGIN_PX = 16;
  * スプライト半幅 8 + 数 px。退場演出はないため、完全に見えなくなってから静かに消す
  */
 export const DESPAWN_MARGIN_PX = 12;
+
+/**
+ * 到着直後の住民を押し出し対象から保護する時間（ゲーム内 ms）。
+ * 来訪者が視界に入る前に押し出されて誰にも見られず消えるのを防ぐ
+ */
+export const ARRIVAL_PROTECT_MS = 10000;

@@ -1,21 +1,17 @@
-import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
 import { VISIT_CHANCE, VISIT_INTERVAL_MS } from "../data/roster-constants";
-import { SPECIES_MOTION } from "../data/species-motion";
 import { SPECIES_SIZE } from "../data/species-size";
 import {
   BAIT_MAX_BASE_Y,
   BAIT_MIN_BASE_Y,
   FLASH_DURATION_MS,
   RESIDENT_MAX,
-  RESIDENT_MAX_BASE_Y,
-  RESIDENT_MIN_BASE_Y,
   SATIETY_MAX,
   TICK_MS,
 } from "../data/world-constants";
-import { clamp } from "../engine/clamp";
 import { isStrokePhase } from "../engine/is-stroke-phase";
-import type { Flash, GameState, Resident, SpeciesId } from "../types";
+import type { Flash, GameState, SpeciesId } from "../types";
 import { countActiveResidents } from "./count-active-residents";
+import { createNewborn } from "./create-newborn";
 import { createVisitor } from "./create-visitor";
 import { headPosition } from "./head-position";
 import { isBaitCaught } from "./is-bait-caught";
@@ -87,28 +83,14 @@ export function stepWorld(
       const departingIndex = pickDepartingIndex(
         residents,
         SPECIES_SIZE[species],
+        elapsedMs,
         random,
       );
       residents = residents.map((resident, index) =>
         index === departingIndex ? { ...resident, departing: true } : resident,
       );
     }
-    const baseY = clamp(hero.y, RESIDENT_MIN_BASE_Y, RESIDENT_MAX_BASE_Y);
-    const born: Resident = {
-      species,
-      x: hero.x,
-      baseY,
-      y: baseY,
-      dir: random() < 0.5 ? -1 : 1,
-      // 演出明け（bornAtMs + BIRTH_FX_TOTAL_MS）に sin 項が 0 になる位相。
-      // 演出中は y=baseY で静止するため、復帰時の y 飛びを防ぐ
-      phase:
-        -(elapsedMs + BIRTH_FX_TOTAL_MS) * SPECIES_MOTION[species].bobFrequency,
-      bornAtMs: elapsedMs,
-      arrivedAtMs: elapsedMs,
-      departing: false,
-    };
-    residents = [...residents, born];
+    residents = [...residents, createNewborn(species, hero, elapsedMs, random)];
     // セレモニー中はカメラ（主人公追従）を止め誕生地点にフォーカスするため即座に静止
     hero = { ...hero, vx: 0, vy: 0 };
   }
