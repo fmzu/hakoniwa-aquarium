@@ -9,6 +9,7 @@ import { loadSave } from "./save/load-save";
 import { storeSave } from "./save/store-save";
 import { updateZukan } from "./save/update-zukan";
 import { detectBornResident } from "./systems/detect-born-resident";
+import { discoveredSpecies } from "./systems/discovered-species";
 import { restoreStateFromSave } from "./systems/restore-state-from-save";
 import { stepWorld } from "./systems/step-world";
 import { attachZukanUi } from "./ui/attach-zukan-ui";
@@ -39,7 +40,7 @@ attachPointerInput(canvas, getCamera, (point, isStart) => {
 
 const advance = createFixedTimestep(TICK_MS, MAX_TICKS_PER_FRAME, () => {
   const prev = state;
-  state = stepWorld(state, Math.random);
+  state = stepWorld(state, Math.random, discoveredSpecies(zukan));
   // 誕生検知は bornAtMs === elapsedMs で行う（1 tick で複数誕生は
   // 構造的に不可能。step-world の繰り越しコメント参照）
   const born = detectBornResident(state.residents, state.elapsedMs);

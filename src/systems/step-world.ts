@@ -1,4 +1,5 @@
 import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
+import { VISIT_CHANCE, VISIT_INTERVAL_MS } from "../data/roster-constants";
 import { SPECIES_MOTION } from "../data/species-motion";
 import { SPECIES_SIZE } from "../data/species-size";
 import {
@@ -13,8 +14,9 @@ import {
 } from "../data/world-constants";
 import { clamp } from "../engine/clamp";
 import { isStrokePhase } from "../engine/is-stroke-phase";
-import type { Flash, GameState, Resident } from "../types";
+import type { Flash, GameState, Resident, SpeciesId } from "../types";
 import { countActiveResidents } from "./count-active-residents";
+import { createVisitor } from "./create-visitor";
 import { headPosition } from "./head-position";
 import { isBaitCaught } from "./is-bait-caught";
 import { isCeremonyActive } from "./is-ceremony-active";
@@ -27,11 +29,17 @@ import { stepHero } from "./step-hero";
 import { stepResident } from "./step-resident";
 
 /**
- * 1 tick の全状態更新。主人公 → 餌移動 → 捕食 → 満腹/誕生 → 住民 → フラッシュ寿命。
+ * 1 tick の全状態更新。主人公 → 餌移動 → 捕食 → 住民移動 → 退場消滅 →
+ * 満腹/誕生（押し出し） → 来訪抽選 → フラッシュ寿命。
  * 誕生セレモニー中は主人公を完全静止させ（path は消費せず保持）、捕食判定もスキップする。
  * カメラは主人公追従なので、これで誕生地点が画面内に留まる
+ * @param discovered - 発見済みの種（来訪抽選の候補。境界層が図鑑から導出して渡す）
  */
-export function stepWorld(state: GameState, random: () => number): GameState {
+export function stepWorld(
+  state: GameState,
+  random: () => number,
+  discovered: readonly SpeciesId[],
+): GameState {
   const elapsedMs = state.elapsedMs + TICK_MS;
   const ceremony = isCeremonyActive(state.residents, elapsedMs);
   const stroke = isStrokePhase(elapsedMs);
@@ -105,6 +113,24 @@ export function stepWorld(state: GameState, random: () => number): GameState {
     hero = { ...hero, vx: 0, vy: 0 };
   }
 
+  // まれな来訪: ゲーム内時間で VISIT_INTERVAL_MS ごとに 1 回だけ抽選する。
+  // 実効数（退場予定を除く）が定員未満・発見種ありのときだけ乱数を引く
+  // （乱数消費を条件付きにして既存の消費順ピンを守る）。来た子は帰らない
+  let nextVisitCheckMs = state.nextVisitCheckMs;
+  if (elapsedMs >= nextVisitCheckMs) {
+    nextVisitCheckMs += VISIT_INTERVAL_MS;
+    if (
+      countActiveResidents(residents) < RESIDENT_MAX &&
+      discovered.length > 0 &&
+      random() < VISIT_CHANCE
+    ) {
+      residents = [
+        ...residents,
+        createVisitor(discovered, hero.x, elapsedMs, random),
+      ];
+    }
+  }
+
   return {
     hero,
     path,
@@ -113,6 +139,6 @@ export function stepWorld(state: GameState, random: () => number): GameState {
     flashes,
     satiety,
     elapsedMs,
-    nextVisitCheckMs: state.nextVisitCheckMs,
+    nextVisitCheckMs,
   };
 }
