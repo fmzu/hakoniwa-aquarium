@@ -12,6 +12,8 @@ function residentBornAt(bornAtMs: number): Resident {
     dir: 1,
     phase: 0,
     bornAtMs,
+    arrivedAtMs: 0,
+    departing: false,
   };
 }
 

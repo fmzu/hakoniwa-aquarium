@@ -10,6 +10,8 @@ const resident = (bornAtMs: number): Resident => ({
   dir: 1,
   phase: 0,
   bornAtMs,
+  arrivedAtMs: 0,
+  departing: false,
 });
 
 test("この tick で誕生した住民（bornAtMs === elapsedMs）を返す", () => {

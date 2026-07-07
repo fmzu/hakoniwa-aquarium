@@ -36,6 +36,9 @@ export function pickStartingResidents(
       phase: random() * 6,
       // 演出窓の外に置く（定数変更に追従）
       bornAtMs: -BIRTH_FX_TOTAL_MS,
+      // セッション開始メンバーの到着はセッション開始時刻（elapsedMs=0）
+      arrivedAtMs: 0,
+      departing: false,
     });
   }
   return residents;

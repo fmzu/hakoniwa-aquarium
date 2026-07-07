@@ -77,6 +77,8 @@ export function stepWorld(state: GameState, random: () => number): GameState {
           -(elapsedMs + BIRTH_FX_TOTAL_MS) *
           SPECIES_MOTION[species].bobFrequency,
         bornAtMs: elapsedMs,
+        arrivedAtMs: elapsedMs,
+        departing: false,
       };
       residents = [...residents, born];
       // セレモニー中はカメラ（主人公追従）を止め誕生地点にフォーカスするため即座に静止

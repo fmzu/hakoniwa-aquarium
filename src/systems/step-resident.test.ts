@@ -11,6 +11,8 @@ test("ラムネ魚は 0.25/tick で進み、振幅 4 で揺れる", () => {
     dir: 1,
     phase: Math.PI / 2,
     bornAtMs: -10000,
+    arrivedAtMs: 0,
+    departing: false,
   };
   const next = stepResident(fish, 0);
   expect(next.x).toBe(100.25);
@@ -26,6 +28,8 @@ test("ストロベリークラゲは 0.1/tick で漂い、振幅 5 で揺れる"
     dir: -1,
     phase: Math.PI / 2,
     bornAtMs: -10000,
+    arrivedAtMs: 0,
+    departing: false,
   };
   const next = stepResident(jelly, 0);
   expect(next.x).toBeCloseTo(99.9, 5);
@@ -41,6 +45,8 @@ test("x は torus で折り返す", () => {
     dir: 1,
     phase: 0,
     bornAtMs: -10000,
+    arrivedAtMs: 0,
+    departing: false,
   };
   expect(stepResident(fish, 0).x).toBeCloseTo(0.15, 5);
 });
@@ -54,6 +60,8 @@ test("誕生演出中は移動も揺れもしない", () => {
     dir: 1,
     phase: 0,
     bornAtMs: 0,
+    arrivedAtMs: 0,
+    departing: false,
   };
   const next = stepResident(newborn, 1000);
   expect(next.x).toBe(100);
@@ -69,6 +77,8 @@ test("演出時間（2500ms）経過後は通常挙動に戻る", () => {
     dir: 1,
     phase: 0,
     bornAtMs: 0,
+    arrivedAtMs: 0,
+    departing: false,
   };
   const next = stepResident(newborn, 2500);
   expect(next.x).toBe(100.25);
