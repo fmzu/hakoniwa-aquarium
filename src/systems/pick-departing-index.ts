@@ -7,7 +7,7 @@ import type { Resident, SizeClass } from "../types";
  * 同階級が不在なら退場予定でない全住民からランダム（フォールバック。
  * 現 3 種は全て "S" なので当面未発動だが、将来の L 級以上に備える）。
  * 新生児は residents に加える前にこの関数を呼ぶことで対象から除外する。
- * 前提: 退場予定でない住民が 1 体以上いること（満員時のみ呼ばれるため保証される）
+ * 前提: 退場予定でない住民が 1 体以上いること（満員時のみ呼ばれるため保証される。違反は throw）
  * @param random - [0, 1) を返す乱数（Math.random 互換）
  */
 export function pickDepartingIndex(
@@ -18,6 +18,11 @@ export function pickDepartingIndex(
   const active = residents
     .map((resident, index) => ({ resident, index }))
     .filter(({ resident }) => !resident.departing);
+  if (active.length === 0) {
+    throw new Error(
+      "pickDepartingIndex: 退場予定でない住民が0体（満員ゲートの契約違反）",
+    );
+  }
   const sameSize = active.filter(
     ({ resident }) => SPECIES_SIZE[resident.species] === newbornSize,
   );

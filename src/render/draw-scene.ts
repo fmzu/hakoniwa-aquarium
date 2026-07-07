@@ -64,7 +64,8 @@ export function drawScene(
       birthing.push({ resident, screenX: x });
       continue;
     }
-    if (x < -18 || x > VIEW_WIDTH + 4) continue;
+    // 中央揃え（スプライト半幅 8）に対し右 +4 では 4px 早くポップアウトするため左右対称にする
+    if (x < -8 || x > VIEW_WIDTH + 8) continue;
     const sprite = RESIDENT_SPRITES[resident.species];
     // frameIntervalMs === 0（1 フレームのスプライト）は mod(x, 0) = NaN になるためガードする
     const frameIndex =

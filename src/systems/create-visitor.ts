@@ -6,6 +6,7 @@ import {
   VIEW_WIDTH,
   WORLD_WIDTH,
 } from "../data/world-constants";
+import { cameraX } from "../engine/camera-x";
 import { mod } from "../engine/mod";
 import type { Resident, SpeciesId } from "../types";
 
@@ -15,7 +16,7 @@ import type { Resident, SpeciesId } from "../types";
  * カメラは主人公追従なので camX は hero.x から導出する。
  * bornAtMs は -BIRTH_FX_TOTAL_MS（負値）固定にして、誕生演出（isBirthFxActive）も
  * 図鑑更新（detectBornResident の bornAtMs === elapsedMs 判定）も発火させない
- * @param discovered - 発見済みの種（1 種以上あることは呼び出し側が保証する）
+ * @param discovered - 発見済みの種（1 種以上あることは呼び出し側が保証する。違反は throw）
  * @param random - [0, 1) を返す乱数（Math.random 互換）
  */
 export function createVisitor(
@@ -24,9 +25,12 @@ export function createVisitor(
   elapsedMs: number,
   random: () => number,
 ): Resident {
+  if (discovered.length === 0) {
+    throw new Error("createVisitor: 発見済みの種が0件（呼び出し側の契約違反）");
+  }
   const species = discovered[Math.floor(random() * discovered.length)];
   const fromLeft = random() < 0.5;
-  const camX = mod(heroX - VIEW_WIDTH / 2, WORLD_WIDTH);
+  const camX = cameraX(heroX);
   const x = fromLeft
     ? mod(camX - VISIT_SPAWN_MARGIN_PX, WORLD_WIDTH)
     : mod(camX + VIEW_WIDTH + VISIT_SPAWN_MARGIN_PX, WORLD_WIDTH);
