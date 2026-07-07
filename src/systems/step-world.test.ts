@@ -186,6 +186,49 @@ test("退場予定は定員に数えない（8 体中 1 体退場予定なら押
   expect(next.residents[8].bornAtMs).toBeCloseTo(TICK_MS, 5);
 });
 
+test("退場予定の住民は視界外に出た瞬間に消え、視界内なら泳ぎ続ける", () => {
+  // hero は水流で x=100.00768 に進む → camX = 36.00768。
+  // 生存域は screenX ∈ [-12, 140]（DESPAWN_MARGIN_PX=12）
+  const base = {
+    baseY: 60,
+    y: 60,
+    dir: 1 as const,
+    phase: 0,
+    bornAtMs: -10000,
+    arrivedAtMs: 0,
+  };
+  const goneDeparting: Resident = {
+    ...base,
+    species: "ramuneFish",
+    x: 300, // screenX ≈ -215.8（完全に視界外）→ 消える
+    departing: true,
+  };
+  const farNonDeparting: Resident = {
+    ...base,
+    species: "strawberryJelly",
+    x: 300, // 同じ位置でも退場予定でなければ消えない
+    departing: false,
+  };
+  const nearDeparting: Resident = {
+    ...base,
+    species: "taiyaki",
+    x: 60, // screenX ≈ 24.2（視界内）→ 退場予定でもまだ消えない
+    departing: true,
+  };
+  const next = stepWorld(
+    stateWithBaitAtHead({
+      residents: [goneDeparting, farNonDeparting, nearDeparting],
+      baits: [], // 捕食・誕生を絡めない
+    }),
+    fixedRandom,
+  );
+  expect(next.residents.map((r) => r.species)).toEqual([
+    "strawberryJelly",
+    "taiyaki",
+  ]);
+  expect(next.residents[1].departing).toBe(true); // 視界内の退場予定は維持
+});
+
 /**
  * セレモニー中の状態。bornAtMs=0 の新入りがいて elapsedMs=0 なので、
  * 次の tick（elapsedMs=TICK_MS）は誕生演出の窓内。

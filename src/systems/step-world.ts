@@ -18,6 +18,7 @@ import { countActiveResidents } from "./count-active-residents";
 import { headPosition } from "./head-position";
 import { isBaitCaught } from "./is-bait-caught";
 import { isCeremonyActive } from "./is-ceremony-active";
+import { isOutOfView } from "./is-out-of-view";
 import { nextBirthSpecies } from "./next-birth-species";
 import { pickDepartingIndex } from "./pick-departing-index";
 import { respawnBait } from "./respawn-bait";
@@ -57,6 +58,12 @@ export function stepWorld(state: GameState, random: () => number): GameState {
 
   let residents = state.residents.map((resident) =>
     stepResident(resident, elapsedMs),
+  );
+  // 退場予定の住民は視界外（余白込み）に出た瞬間に静かに消える（退場演出はスコープ外）。
+  // 判定は移動後の位置 × 移動後の hero（カメラ）で行う。
+  // 消滅は departing 限定——来訪スポーン位置の安全性がこの条件に依存
+  residents = residents.filter(
+    (resident) => !(resident.departing && isOutOfView(resident.x, hero.x)),
   );
   if (satiety >= SATIETY_MAX) {
     // 同tick複数捕食の超過分は次の誕生へ繰り越す（docs/spec.md 決定ログ参照）
