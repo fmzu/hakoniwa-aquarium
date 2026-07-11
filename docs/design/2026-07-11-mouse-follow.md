@@ -18,7 +18,7 @@
 
 変更ファイル: `src/engine/attach-pointer-input.ts` のみ。
 
-`pointerdown` / `pointermove` の既存ハンドラ内で `event.pointerType` を参照し、`"mouse"` のときは `isStart=true` を送る。`isPrimary` ガード・`setPointerCapture`・`pointercancel` の既存処理は維持する。
+`pointermove` で `event.pointerType` を参照し（`pointerdown` は全デバイスで始点＝`isStart=true` のため参照不要）、`"mouse"` のときは `isStart=true` を送る。`isPrimary` ガード・`setPointerCapture`・`pointercancel` の既存処理は維持する。
 
 ## スコープ外
 
