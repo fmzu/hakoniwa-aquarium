@@ -3,13 +3,18 @@ import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
 import { VISIT_INTERVAL_MS } from "../data/roster-constants";
 import { SPECIES_MOTION } from "../data/species-motion";
 import { BAIT_SPEED, TICK_MS } from "../data/world-constants";
-import type { Bait, GameState, Resident } from "../types";
+import type { Bait, GameState, Resident, Zukan, ZukanEntry } from "../types";
 import { createInitialState } from "./create-initial-state";
 import { detectBornResident } from "./detect-born-resident";
 import { isBirthFxActive } from "./is-birth-fx-active";
 import { stepWorld } from "./step-world";
 
 const fixedRandom = () => 0.5;
+
+const zukanEntry: ZukanEntry = {
+  firstDiscoveredAt: "2026-07-27T00:00:00.000Z",
+  birthCount: 1,
+};
 
 /**
  * 主人公（x=100, y=60, 左向き）の頭は約 (88, 54)。
@@ -34,20 +39,26 @@ function stateWithBaitAtHead(overrides: Partial<GameState> = {}): GameState {
 }
 
 test("経過時間が TICK_MS だけ進む", () => {
-  const next = stepWorld(createInitialState(fixedRandom), fixedRandom, []);
+  const next = stepWorld(createInitialState(fixedRandom), fixedRandom, {});
   expect(next.elapsedMs).toBeCloseTo(TICK_MS, 5);
 });
 
 test("頭の近くの餌を食べると満腹 +1 し、餌は反対側にリスポーンする", () => {
-  const next = stepWorld(stateWithBaitAtHead(), fixedRandom, []);
+  const next = stepWorld(stateWithBaitAtHead(), fixedRandom, {});
   expect(next.satiety).toBe(1);
   expect(next.baits[0].x).toBeCloseTo(340.00768, 3); // mod(hero.x + 240, 480)
   expect(next.baits[0].baseY).toBe(74); // 28 + 0.5 * 92
   expect(next.flashes.length).toBe(1);
 });
 
-test("満腹 5 で誕生し、1 体目はラムネ魚", () => {
-  const next = stepWorld(stateWithBaitAtHead({ satiety: 4 }), fixedRandom, []);
+test("満腹 5 で誕生する（未発見1種ならその種）", () => {
+  // strawberryJelly と taiyaki を発見済みにし、未発見を ramuneFish のみに絞る
+  const zukan: Zukan = { strawberryJelly: zukanEntry, taiyaki: zukanEntry };
+  const next = stepWorld(
+    stateWithBaitAtHead({ satiety: 4 }),
+    fixedRandom,
+    zukan,
+  );
   expect(next.satiety).toBe(0);
   expect(next.residents.length).toBe(1);
   expect(next.residents[0].species).toBe("ramuneFish");
@@ -57,7 +68,7 @@ test("満腹 5 で誕生し、1 体目はラムネ魚", () => {
 });
 
 test("誕生した住民は bornAtMs を持ち、演出明けに y=baseY となる位相を持つ", () => {
-  const next = stepWorld(stateWithBaitAtHead({ satiety: 4 }), fixedRandom, []);
+  const next = stepWorld(stateWithBaitAtHead({ satiety: 4 }), fixedRandom, {});
   const born = next.residents[0];
   expect(born.bornAtMs).toBeCloseTo(TICK_MS, 5);
   // phase = -(bornAtMs + BIRTH_FX_TOTAL_MS) * bobFrequency なので sin 項は厳密に 0
@@ -67,27 +78,6 @@ test("誕生した住民は bornAtMs を持ち、演出明けに y=baseY とな�
   ).toBeCloseTo(0, 5);
   expect(born.arrivedAtMs).toBe(born.bornAtMs); // 誕生＝到着
   expect(born.departing).toBe(false);
-});
-
-test("誕生順は固定テーブルをループする（2 体目はストロベリークラゲ）", () => {
-  const existing: Resident = {
-    species: "ramuneFish",
-    x: 300,
-    baseY: 60,
-    y: 60,
-    dir: 1,
-    phase: 0,
-    bornAtMs: -10000,
-    arrivedAtMs: 0,
-    departing: false,
-  };
-  const next = stepWorld(
-    stateWithBaitAtHead({ satiety: 4, residents: [existing] }),
-    fixedRandom,
-    [],
-  );
-  expect(next.residents.length).toBe(2);
-  expect(next.residents[1].species).toBe("strawberryJelly");
 });
 
 test("満腹 4 で同 tick に 2 匹捕食すると 1 体誕生し、超過分 1 が繰り越される", () => {
@@ -103,7 +93,7 @@ test("満腹 4 で同 tick に 2 匹捕食すると 1 体誕生し、超過分 1
   const next = stepWorld(
     { ...base, baits: [...base.baits, secondBait] },
     fixedRandom,
-    [],
+    {},
   );
   expect(next.residents.length).toBe(1);
   expect(next.satiety).toBe(1); // 6 - SATIETY_MAX。切り捨てず繰り越す
@@ -132,7 +122,7 @@ test("満員で満腹 4 + 同 tick 2 匹捕食でも誕生し、超過分 1 は�
   const next = stepWorld(
     { ...base, baits: [...base.baits, secondBait] },
     fixedRandom,
-    [],
+    {},
   );
   expect(next.residents.length).toBe(9); // 押し出し誕生
   expect(next.satiety).toBe(1); // 6 - SATIETY_MAX。繰り越しは満員でも同じ
@@ -150,23 +140,25 @@ test("満員でも誕生し、同サイズ階級からランダムに 1 体が�
     arrivedAtMs: 0,
     departing: false,
   }));
+  // 未発見を taiyaki のみに絞り、新生児種を決定化する
+  const zukan: Zukan = { ramuneFish: zukanEntry, strawberryJelly: zukanEntry };
   const next = stepWorld(
     stateWithBaitAtHead({ satiety: 4, residents: full }),
     fixedRandom,
-    [],
+    zukan,
   );
   expect(next.satiety).toBe(0);
   expect(next.residents.length).toBe(9); // 一時的に 9 体を許容
-  // 新生児: nextBirthSpecies(8) = BIRTH_TABLE[8 % 3 = 2] = taiyaki（末尾に追加）
+  // 新生児は未発見唯一の taiyaki（末尾に追加）
   const born = next.residents[8];
   expect(born.species).toBe("taiyaki");
   expect(born.bornAtMs).toBeCloseTo(TICK_MS, 5);
   expect(born.departing).toBe(false);
-  // 押し出し: 全員 "S" = 新生児と同階級。乱数消費は 餌リスポーン baseY →
-  // 押し出し選定 → 新生児 dir の順なので floor(0.5 * 8) = 4 が退場予定になる
+  // 押し出し: 全員 "S" = 新生児と同階級。乱数は全て 0.5 の定数なので消費順が
+  // 1つ増えても値は不変 → floor(0.5 * 8) = 4 が退場予定になる
   expect(next.residents.filter((r) => r.departing).length).toBe(1);
   expect(next.residents[4].departing).toBe(true);
-  // 押し出された住民は消えず泳ぎ続ける（消滅判定は押し出しより前段なので、この tick では消えない）
+  // 押し出された住民は消えず泳ぎ続ける（消滅判定は押し出しより前段）
   expect(next.residents[4].x).toBeCloseTo(280.25, 5); // 200 + 4*20 + speed 0.25
 });
 
@@ -186,7 +178,7 @@ test("退場予定は定員に数えない（8 体中 1 体退場予定なら押
   const next = stepWorld(
     stateWithBaitAtHead({ satiety: 4, residents }),
     fixedRandom,
-    [],
+    {},
   );
   // 実効 7 体 < RESIDENT_MAX なので通常誕生（押し出しなし）
   expect(next.residents.length).toBe(9);
@@ -229,7 +221,7 @@ test("退場予定の住民は視界外に出た瞬間に消え、視界内な�
       baits: [], // 捕食・誕生を絡めない
     }),
     fixedRandom,
-    [],
+    {},
   );
   expect(next.residents.map((r) => r.species)).toEqual([
     "strawberryJelly",
@@ -275,7 +267,7 @@ function stateDuringCeremony(): GameState {
 }
 
 test("誕生した tick で主人公の速度が 0 になる", () => {
-  const next = stepWorld(stateWithBaitAtHead({ satiety: 4 }), fixedRandom, []);
+  const next = stepWorld(stateWithBaitAtHead({ satiety: 4 }), fixedRandom, {});
   expect(next.residents.length).toBe(1);
   expect(next.hero.vx).toBe(0);
   expect(next.hero.vy).toBe(0);
@@ -283,13 +275,13 @@ test("誕生した tick で主人公の速度が 0 になる", () => {
 
 test("セレモニー中は主人公が完全静止し path も保持される", () => {
   const state = stateDuringCeremony();
-  const next = stepWorld(state, fixedRandom, []);
+  const next = stepWorld(state, fixedRandom, {});
   expect(next.hero).toEqual(state.hero);
   expect(next.path).toEqual(state.path);
 });
 
 test("セレモニー中は餌に頭が触れても食べられない", () => {
-  const next = stepWorld(stateDuringCeremony(), fixedRandom, []);
+  const next = stepWorld(stateDuringCeremony(), fixedRandom, {});
   expect(next.satiety).toBe(0);
   expect(next.flashes.length).toBe(0);
   // リスポーンせず泳ぎ続ける（x が BAIT_SPEED ぶん進むだけ）
@@ -301,7 +293,7 @@ test("セレモニー中も世界は生きている（餌・他住民・経過�
     ...stateDuringCeremony(),
     flashes: [{ x: 10, y: 10, bornAt: -1000 }], // 経過 1000ms 超 → 消える
   };
-  const next = stepWorld(state, fixedRandom, []);
+  const next = stepWorld(state, fixedRandom, {});
   expect(next.elapsedMs).toBeCloseTo(TICK_MS, 5);
   expect(next.baits[0].x).not.toBe(state.baits[0].x);
   // 演出対象外の他住民は泳ぐ
@@ -331,7 +323,7 @@ test("演出明けの tick で主人公が再び動き出す", () => {
     hero: { x: 100, y: 60, vx: 0, vy: 0, facing: -1 },
     baits: [], // 捕食を絡めない
   });
-  const next = stepWorld(state, fixedRandom, []);
+  const next = stepWorld(state, fixedRandom, {});
   expect(next.hero.x).not.toBe(state.hero.x);
   expect(next.hero.vx).not.toBe(0);
 });
@@ -340,7 +332,7 @@ test("来訪チェック時刻を過ぎると抽選し、当たれば視界外�
   const state = stateWithBaitAtHead({ baits: [], nextVisitCheckMs: 0 });
   // random=0.4: 当選（0.4 < VISIT_CHANCE 0.5）→ 種 floor(0.4*1)=0 →
   // 左右 0.4 < 0.5 = 左外 → baseY 24 + 0.4*94 = 61.6 → phase 2.4
-  const next = stepWorld(state, () => 0.4, ["ramuneFish"]);
+  const next = stepWorld(state, () => 0.4, { ramuneFish: zukanEntry });
   expect(next.residents.length).toBe(1);
   const visitor = next.residents[0];
   expect(visitor.species).toBe("ramuneFish");
@@ -359,14 +351,14 @@ test("来訪チェック時刻を過ぎると抽選し、当たれば視界外�
 
 test("抽選に外れたら来訪せず、次回チェック時刻だけ進む", () => {
   const state = stateWithBaitAtHead({ baits: [], nextVisitCheckMs: 0 });
-  const next = stepWorld(state, () => 0.6, ["ramuneFish"]); // 0.6 >= 0.5 で外れ
+  const next = stepWorld(state, () => 0.6, { ramuneFish: zukanEntry }); // 0.6 >= 0.5 で外れ
   expect(next.residents.length).toBe(0);
   expect(next.nextVisitCheckMs).toBe(VISIT_INTERVAL_MS);
 });
 
 test("チェック時刻に達していなければ抽選しない", () => {
   const state = stateWithBaitAtHead({ baits: [] }); // nextVisitCheckMs = 300000（初期値）
-  const next = stepWorld(state, () => 0.4, ["ramuneFish"]);
+  const next = stepWorld(state, () => 0.4, { ramuneFish: zukanEntry });
   expect(next.residents.length).toBe(0);
   expect(next.nextVisitCheckMs).toBe(VISIT_INTERVAL_MS); // 据え置き
 });
@@ -388,14 +380,14 @@ test("定員（退場予定を除く 8 体）のときは来訪しない", () =>
     residents: full,
     nextVisitCheckMs: 0,
   });
-  const next = stepWorld(state, () => 0.4, ["ramuneFish"]);
+  const next = stepWorld(state, () => 0.4, { ramuneFish: zukanEntry });
   expect(next.residents.length).toBe(8);
   expect(next.nextVisitCheckMs).toBe(VISIT_INTERVAL_MS); // チェック自体は消化する
 });
 
-test("未発見（discovered が空）なら当たっても来訪しない", () => {
+test("未発見（図鑑が空）なら当たっても来訪しない", () => {
   const state = stateWithBaitAtHead({ baits: [], nextVisitCheckMs: 0 });
-  const next = stepWorld(state, () => 0.4, []);
+  const next = stepWorld(state, () => 0.4, {});
   expect(next.residents.length).toBe(0);
   expect(next.nextVisitCheckMs).toBe(VISIT_INTERVAL_MS);
 });
@@ -409,7 +401,7 @@ test("古いフラッシュは 600ms で消える", () => {
       { x: 20, y: 20, bornAt: 900 }, // 経過 100ms → 残る
     ],
   };
-  const next = stepWorld(state, fixedRandom, []);
+  const next = stepWorld(state, fixedRandom, {});
   expect(next.flashes.length).toBe(1);
   expect(next.flashes[0].x).toBe(20);
 });

@@ -9,10 +9,11 @@ import {
   TICK_MS,
 } from "../data/world-constants";
 import { isStrokePhase } from "../engine/is-stroke-phase";
-import type { Flash, GameState, SpeciesId } from "../types";
+import type { Flash, GameState, Zukan } from "../types";
 import { countActiveResidents } from "./count-active-residents";
 import { createNewborn } from "./create-newborn";
 import { createVisitor } from "./create-visitor";
+import { discoveredSpecies } from "./discovered-species";
 import { headPosition } from "./head-position";
 import { isBaitCaught } from "./is-bait-caught";
 import { isCeremonyActive } from "./is-ceremony-active";
@@ -29,12 +30,12 @@ import { stepResident } from "./step-resident";
  * 満腹/誕生（押し出し） → 来訪抽選 → フラッシュ寿命。
  * 誕生セレモニー中は主人公を完全静止させ（path は消費せず保持）、捕食判定もスキップする。
  * カメラは主人公追従なので、これで誕生地点が画面内に留まる
- * @param discovered - 発見済みの種（来訪抽選の候補。境界層が図鑑から導出して渡す）
+ * @param zukan - 図鑑。誕生の未発見抽選と来訪の発見済み候補の両方をここから導出する
  */
 export function stepWorld(
   state: GameState,
   random: () => number,
-  discovered: readonly SpeciesId[],
+  zukan: Zukan,
 ): GameState {
   const elapsedMs = state.elapsedMs + TICK_MS;
   const ceremony = isCeremonyActive(state.residents, elapsedMs);
@@ -75,7 +76,7 @@ export function stepWorld(
     // SATIETY_MAX(5) に届かず、二重誕生は構造的に不可能。
     // セレモニー中は捕食無効なので誕生の連鎖も起きない
     satiety -= SATIETY_MAX;
-    const species = nextBirthSpecies(residents.length);
+    const species = nextBirthSpecies(zukan, random);
     // 満員（退場予定を除く実効数が上限）でも誕生する（押し出し方式。
     // docs/spec.md 決定ログ 3 参照）。新生児と同サイズ階級から 1 体を退場予定にする。
     // 新生児を配列に加える前に選ぶことで新生児自身を対象から除外する
@@ -98,6 +99,8 @@ export function stepWorld(
   // まれな来訪: ゲーム内時間で VISIT_INTERVAL_MS ごとに 1 回だけ抽選する。
   // 実効数（退場予定を除く）が定員未満・発見種ありのときだけ乱数を引く
   // （乱数消費を条件付きにして既存の消費順ピンを守る）。来た子は帰らない
+  // 来訪抽選の候補は発見済みの種。境界層ではなくここで図鑑から導出する
+  const discovered = discoveredSpecies(zukan);
   let nextVisitCheckMs = state.nextVisitCheckMs;
   if (elapsedMs >= nextVisitCheckMs) {
     nextVisitCheckMs += VISIT_INTERVAL_MS;
