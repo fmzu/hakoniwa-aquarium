@@ -99,11 +99,11 @@ export function stepWorld(
   // まれな来訪: ゲーム内時間で VISIT_INTERVAL_MS ごとに 1 回だけ抽選する。
   // 実効数（退場予定を除く）が定員未満・発見種ありのときだけ乱数を引く
   // （乱数消費を条件付きにして既存の消費順ピンを守る）。来た子は帰らない
-  // 来訪抽選の候補は発見済みの種。境界層ではなくここで図鑑から導出する
-  const discovered = discoveredSpecies(zukan);
   let nextVisitCheckMs = state.nextVisitCheckMs;
   if (elapsedMs >= nextVisitCheckMs) {
     nextVisitCheckMs += VISIT_INTERVAL_MS;
+    // 来訪抽選の候補は発見済みの種。境界層ではなくここで図鑑から導出する
+    const discovered = discoveredSpecies(zukan);
     if (
       countActiveResidents(residents) < RESIDENT_MAX &&
       discovered.length > 0 &&
