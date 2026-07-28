@@ -5,7 +5,6 @@ import {
   BAIT_MIN_BASE_Y,
   FLASH_DURATION_MS,
   RESIDENT_MAX,
-  SATIETY_MAX,
   TICK_MS,
 } from "../data/world-constants";
 import { isStrokePhase } from "../engine/is-stroke-phase";
@@ -21,6 +20,7 @@ import { isOutOfView } from "./is-out-of-view";
 import { nextBirthSpecies } from "./next-birth-species";
 import { pickDepartingIndex } from "./pick-departing-index";
 import { respawnBait } from "./respawn-bait";
+import { satietyMax } from "./satiety-max";
 import { stepBait } from "./step-bait";
 import { stepHero } from "./step-hero";
 import { stepResident } from "./step-resident";
@@ -70,12 +70,13 @@ export function stepWorld(
   residents = residents.filter(
     (resident) => !(resident.departing && isOutOfView(resident.x, hero.x)),
   );
-  if (satiety >= SATIETY_MAX) {
+  const need = satietyMax(zukan);
+  if (satiety >= need) {
     // 同tick複数捕食の超過分は次の誕生へ繰り越す（docs/spec.md 決定ログ参照）
     // 安全性: BAIT_COUNT=3 より 1 tick の最大加算は 3 → 繰り越しは最大 2 で
-    // SATIETY_MAX(5) に届かず、二重誕生は構造的に不可能。
+    // need（最小 5）に届かず、二重誕生は構造的に不可能。
     // セレモニー中は捕食無効なので誕生の連鎖も起きない
-    satiety -= SATIETY_MAX;
+    satiety -= need;
     const species = nextBirthSpecies(zukan, random);
     // 満員（退場予定を除く実効数が上限）でも誕生する（押し出し方式。
     // docs/spec.md 決定ログ 3 参照）。新生児と同サイズ階級から 1 体を退場予定にする。

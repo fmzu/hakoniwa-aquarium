@@ -1,12 +1,21 @@
 import { expect, test } from "bun:test";
 import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
 import { VISIT_INTERVAL_MS } from "../data/roster-constants";
+import { SPECIES_IDS } from "../data/species-ids";
 import { SPECIES_MOTION } from "../data/species-motion";
 import { BAIT_SPEED, TICK_MS } from "../data/world-constants";
-import type { Bait, GameState, Resident, Zukan, ZukanEntry } from "../types";
+import type {
+  Bait,
+  GameState,
+  Resident,
+  SpeciesId,
+  Zukan,
+  ZukanEntry,
+} from "../types";
 import { createInitialState } from "./create-initial-state";
 import { detectBornResident } from "./detect-born-resident";
 import { isBirthFxActive } from "./is-birth-fx-active";
+import { satietyMax } from "./satiety-max";
 import { stepWorld } from "./step-world";
 
 const fixedRandom = () => 0.5;
@@ -15,6 +24,13 @@ const zukanEntry: ZukanEntry = {
   firstDiscoveredAt: "2026-07-27T00:00:00.000Z",
   birthCount: 1,
 };
+
+/** 対象種以外を全発見させた図鑑（未発見をちょうど1種に絞る。種数が増えても堅牢） */
+function zukanDiscoveringAllExcept(target: SpeciesId): Zukan {
+  const zukan: Zukan = {};
+  for (const id of SPECIES_IDS) if (id !== target) zukan[id] = zukanEntry;
+  return zukan;
+}
 
 /**
  * 主人公（x=100, y=60, 左向き）の頭は約 (88, 54)。
@@ -51,20 +67,20 @@ test("頭の近くの餌を食べると満腹 +1 し、餌は反対側にリス�
   expect(next.flashes.length).toBe(1);
 });
 
-test("満腹 5 で誕生する（未発見1種ならその種）", () => {
-  // strawberryJelly と taiyaki を発見済みにし、未発見を ramuneFish のみに絞る
-  const zukan: Zukan = { strawberryJelly: zukanEntry, taiyaki: zukanEntry };
+test("必要数に達すると誕生する（未発見が1種ならその種）", () => {
+  // ramuneFish 以外を全発見 → 未発見は ramuneFish のみ
+  const zukan = zukanDiscoveringAllExcept("ramuneFish");
+  const need = satietyMax(zukan); // 発見数に応じた必要数（3種時は 6）
   const next = stepWorld(
-    stateWithBaitAtHead({ satiety: 4 }),
+    stateWithBaitAtHead({ satiety: need - 1 }),
     fixedRandom,
     zukan,
   );
-  expect(next.satiety).toBe(0);
+  expect(next.satiety).toBe(0); // (need-1)+1 - need
   expect(next.residents.length).toBe(1);
   expect(next.residents[0].species).toBe("ramuneFish");
   expect(next.residents[0].baseY).toBe(60); // clamp(hero.y, 24, 118)
-  // 大フラッシュは廃止。捕食リング 1 個だけが残る
-  expect(next.flashes.length).toBe(1);
+  expect(next.flashes.length).toBe(1); // 捕食リング1個
 });
 
 test("誕生した住民は bornAtMs を持ち、演出明けに y=baseY となる位相を持つ", () => {
@@ -96,7 +112,7 @@ test("満腹 4 で同 tick に 2 匹捕食すると 1 体誕生し、超過分 1
     {},
   );
   expect(next.residents.length).toBe(1);
-  expect(next.satiety).toBe(1); // 6 - SATIETY_MAX。切り捨てず繰り越す
+  expect(next.satiety).toBe(1); // 6 - satietyMax({})=5。切り捨てず繰り越す
 });
 
 test("満員で満腹 4 + 同 tick 2 匹捕食でも誕生し、超過分 1 は繰り越される", () => {
@@ -125,7 +141,7 @@ test("満員で満腹 4 + 同 tick 2 匹捕食でも誕生し、超過分 1 は�
     {},
   );
   expect(next.residents.length).toBe(9); // 押し出し誕生
-  expect(next.satiety).toBe(1); // 6 - SATIETY_MAX。繰り越しは満員でも同じ
+  expect(next.satiety).toBe(1); // 6 - satietyMax({})=5。繰り越しは満員でも同じ
 });
 
 test("満員でも誕生し、同サイズ階級からランダムに 1 体が退場予定になる（押し出し）", () => {
@@ -140,10 +156,11 @@ test("満員でも誕生し、同サイズ階級からランダムに 1 体が�
     arrivedAtMs: 0,
     departing: false,
   }));
-  // 未発見を taiyaki のみに絞り、新生児種を決定化する
-  const zukan: Zukan = { ramuneFish: zukanEntry, strawberryJelly: zukanEntry };
+  // taiyaki 以外を全発見 → 未発見は taiyaki のみ
+  const zukan = zukanDiscoveringAllExcept("taiyaki");
+  const need = satietyMax(zukan);
   const next = stepWorld(
-    stateWithBaitAtHead({ satiety: 4, residents: full }),
+    stateWithBaitAtHead({ satiety: need - 1, residents: full }),
     fixedRandom,
     zukan,
   );
@@ -154,8 +171,8 @@ test("満員でも誕生し、同サイズ階級からランダムに 1 体が�
   expect(born.species).toBe("taiyaki");
   expect(born.bornAtMs).toBeCloseTo(TICK_MS, 5);
   expect(born.departing).toBe(false);
-  // 押し出し: 全員 "S" = 新生児と同階級。乱数は全て 0.5 の定数なので消費順が
-  // 1つ増えても値は不変 → floor(0.5 * 8) = 4 が退場予定になる
+  // 押し出し: 全員 "S" = 新生児と同階級。乱数は全て 0.5 の定数なので
+  // 消費順が変わっても値は不変 → floor(0.5 * 8) = 4 が退場予定になる
   expect(next.residents.filter((r) => r.departing).length).toBe(1);
   expect(next.residents[4].departing).toBe(true);
   // 押し出された住民は消えず泳ぎ続ける（消滅判定は押し出しより前段）

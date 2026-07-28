@@ -49,8 +49,8 @@ test("version 欠損は初期セーブになる", () => {
 });
 
 test("satiety が不正（範囲外・非整数・型違い）なら初期セーブになる", () => {
-  // SATIETY_MAX(5) 以上は不正（stepWorld は誕生時に必ず減算するため保存値は 0〜4）
-  expect(parseSave(JSON.stringify({ ...validSave, satiety: 5 }))).toEqual(
+  // validSave は 2 種発見 → satietyMax=6。6 以上は不正
+  expect(parseSave(JSON.stringify({ ...validSave, satiety: 6 }))).toEqual(
     createInitialSave(),
   );
   expect(parseSave(JSON.stringify({ ...validSave, satiety: -1 }))).toEqual(
@@ -64,14 +64,14 @@ test("satiety が不正（範囲外・非整数・型違い）なら初期セー
   );
 });
 
-test("satiety の境界値 0 と 4（SATIETY_MAX - 1）は受理される", () => {
+test("satiety の境界値 0 と satietyMax-1（=5）は受理される", () => {
   expect(parseSave(JSON.stringify({ ...validSave, satiety: 0 }))).toEqual({
     ...validSave,
     satiety: 0,
   });
-  expect(parseSave(JSON.stringify({ ...validSave, satiety: 4 }))).toEqual({
+  expect(parseSave(JSON.stringify({ ...validSave, satiety: 5 }))).toEqual({
     ...validSave,
-    satiety: 4,
+    satiety: 5,
   });
 });
 
@@ -208,4 +208,16 @@ test("zukan 欠損・未知の種キー・不正エントリは初期セーブ�
       }),
     ),
   ).toEqual(createInitialSave());
+});
+
+test("空図鑑なら上限は 5（satietyMax({})）: satiety 4 は受理・5 は不正", () => {
+  const emptyZukan = { version: 1, zukan: {}, satiety: 4 };
+  expect(parseSave(JSON.stringify(emptyZukan))).toEqual({
+    version: 1,
+    zukan: {},
+    satiety: 4,
+  });
+  expect(parseSave(JSON.stringify({ ...emptyZukan, satiety: 5 }))).toEqual(
+    createInitialSave(),
+  );
 });

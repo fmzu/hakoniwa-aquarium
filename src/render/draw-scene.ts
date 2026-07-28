@@ -6,7 +6,6 @@ import {
   FLASH_BASE_RADIUS,
   FLASH_DURATION_MS,
   FLASH_GROW_RADIUS,
-  SATIETY_MAX,
   VIEW_WIDTH,
   WORLD_WIDTH,
 } from "../data/world-constants";
@@ -33,6 +32,7 @@ export function drawScene(
   state: GameState,
   camX: number,
   camY: number,
+  satietyMax: number,
 ): void {
   drawBackground(ctx, camY);
   drawPath(ctx, state.path, camX, camY);
@@ -132,7 +132,7 @@ export function drawScene(
   }
 
   // HUD: 満腹ピップ（暗転の影響を受けないよう最後に描く）
-  for (let i = 0; i < SATIETY_MAX; i++) {
+  for (let i = 0; i < satietyMax; i++) {
     ctx.fillStyle = i < state.satiety ? "#FFB0C6" : "rgba(255,255,255,0.25)";
     ctx.fillRect(4 + i * 6, 4, 4, 4);
   }

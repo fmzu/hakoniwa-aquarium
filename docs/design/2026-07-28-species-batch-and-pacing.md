@@ -40,8 +40,10 @@
 ### 方式: satietyMax 漸増式
 
 ```
-satietyMax(zukan) = 5 + floor(発見数 / 2)
+satietyMax(zukan) = 5 + floor(min(発見数, 全種数-1) / 2)
 ```
+
+発見数を `全種数-1` でキャップするため、全種発見後も値は増えない。
 
 8種での必要餌数の変化:
 

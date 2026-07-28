@@ -1,11 +1,12 @@
 import { SPECIES_IDS } from "../data/species-ids";
-import { SATIETY_MAX } from "../data/world-constants";
+import { satietyMax } from "../systems/satiety-max";
 import type { SaveData, SpeciesId, Zukan } from "../types";
 import { createInitialSave } from "./create-initial-save";
 
 /**
  * セーブ文字列を検証つきで読み取る。壊れた JSON・欠損フィールド・不正値は
- * すべて初期セーブへフォールバックする（クラッシュさせない・部分修復はしない）
+ * すべて初期セーブへフォールバックする（クラッシュさせない・部分修復はしない）。
+ * 満腹の上限は発見数に依存する（satietyMax(zukan)）ため、図鑑を先に検証する。
  */
 export function parseSave(raw: string | null): SaveData {
   if (raw === null) return createInitialSave();
@@ -21,16 +22,7 @@ export function parseSave(raw: string | null): SaveData {
   const record = data as Record<string, unknown>;
   if (record.version !== 1) return createInitialSave();
 
-  const satiety = record.satiety;
-  if (
-    typeof satiety !== "number" ||
-    !Number.isInteger(satiety) ||
-    satiety < 0 ||
-    satiety >= SATIETY_MAX
-  ) {
-    return createInitialSave();
-  }
-
+  // 図鑑を先に検証・構築する（満腹の上限が発見数に依存するため順序が重要）
   const zukanRaw = record.zukan;
   if (
     typeof zukanRaw !== "object" ||
@@ -67,5 +59,18 @@ export function parseSave(raw: string | null): SaveData {
       birthCount: entry.birthCount,
     };
   }
+
+  // 満腹は 0〜satietyMax(zukan)-1 の整数（stepWorld は誕生時に必ず減算するため
+  // 保存値は上限未満に収まる）
+  const satiety = record.satiety;
+  if (
+    typeof satiety !== "number" ||
+    !Number.isInteger(satiety) ||
+    satiety < 0 ||
+    satiety >= satietyMax(zukan)
+  ) {
+    return createInitialSave();
+  }
+
   return { version: 1, zukan, satiety };
 }

@@ -10,6 +10,7 @@ import { storeSave } from "./save/store-save";
 import { updateZukan } from "./save/update-zukan";
 import { detectBornResident } from "./systems/detect-born-resident";
 import { restoreStateFromSave } from "./systems/restore-state-from-save";
+import { satietyMax } from "./systems/satiety-max";
 import { stepWorld } from "./systems/step-world";
 import { attachZukanUi } from "./ui/attach-zukan-ui";
 import { renderZukanIcon } from "./ui/render-zukan-icon";
@@ -62,7 +63,7 @@ resize();
 const frame = (now: number) => {
   advance(now);
   const { camX, camY } = getCamera();
-  drawScene(ctx, state, camX, camY);
+  drawScene(ctx, state, camX, camY, satietyMax(zukan));
   requestAnimationFrame(frame);
 };
 requestAnimationFrame(frame);

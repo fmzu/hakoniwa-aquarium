@@ -49,7 +49,6 @@ export const BAIT_BOB_AMPLITUDE = 3;
 export const BAIT_BOB_FREQUENCY = 0.002;
 
 /** 満腹・誕生 */
-export const SATIETY_MAX = 5;
 export const RESIDENT_MAX = 8;
 export const RESIDENT_MIN_BASE_Y = 24;
 export const RESIDENT_MAX_BASE_Y = 118;
