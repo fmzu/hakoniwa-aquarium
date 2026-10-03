@@ -1,7 +1,5 @@
 import { mod } from "../engine/mod";
-
-/** 推進フェーズ（速い上昇）の占める割合。残りが沈降フェーズ（ゆっくり下降） */
-const RISE_PHASE_RATIO = 0.35;
+import { ZIGZAG_RISE_PHASE_RATIO } from "./is-zigzag-rising";
 
 /**
  * ゲッソー風ジグザグ軌道の y 座標を計算する。
@@ -16,10 +14,12 @@ export function zigzagY(
   elapsedMs: number,
 ): number {
   const t = mod(elapsedMs * frequency + phase, 2 * Math.PI) / (2 * Math.PI);
-  if (t < RISE_PHASE_RATIO) {
-    return baseY - amplitude * (t / RISE_PHASE_RATIO);
+  if (t < ZIGZAG_RISE_PHASE_RATIO) {
+    return baseY - amplitude * (t / ZIGZAG_RISE_PHASE_RATIO);
   }
   return (
-    baseY - amplitude * (1 - (t - RISE_PHASE_RATIO) / (1 - RISE_PHASE_RATIO))
+    baseY -
+    amplitude *
+      (1 - (t - ZIGZAG_RISE_PHASE_RATIO) / (1 - ZIGZAG_RISE_PHASE_RATIO))
   );
 }

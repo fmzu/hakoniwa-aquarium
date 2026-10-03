@@ -14,6 +14,7 @@ import { isStrokePhase } from "../engine/is-stroke-phase";
 import { mod } from "../engine/mod";
 import { torusDistance } from "../engine/torus-distance";
 import { isBirthFxActive } from "../systems/is-birth-fx-active";
+import { isZigzagRising } from "../systems/is-zigzag-rising";
 import type { GameState, Resident } from "../types";
 import { birthFxPhase } from "./birth-fx-phase";
 import { drawBackground } from "./draw-background";
@@ -71,14 +72,13 @@ export function drawScene(
     const motion = SPECIES_MOTION[resident.species];
     let frameIndex: number;
     if (motion.motionType === "zigzag") {
-      // 推進フェーズ（体が縮む frame 1）/ 沈降フェーズ（体が広がる frame 0）に同期させる
-      const t =
-        mod(
-          state.elapsedMs * motion.bobFrequency + resident.phase,
-          2 * Math.PI,
-        ) /
-        (2 * Math.PI);
-      frameIndex = t < 0.35 ? 1 : 0;
+      frameIndex = isZigzagRising(
+        motion.bobFrequency,
+        resident.phase,
+        state.elapsedMs,
+      )
+        ? 1
+        : 0;
     } else {
       // frameIntervalMs === 0（1 フレームのスプライト）は mod(x, 0) = NaN になるためガードする
       frameIndex =
