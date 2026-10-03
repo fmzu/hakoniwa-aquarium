@@ -37,6 +37,25 @@ test("ストロベリークラゲは 0.1/tick で漂い、ジグザグ軌道で�
   expect(next.y).toBeCloseTo(60 - 5 * (0.25 / 0.35), 5);
 });
 
+test("ストロベリークラゲは沈降フェーズ中、横移動が 0.25 倍に減速する", () => {
+  const frequency = 0.001;
+  const period = (2 * Math.PI) / frequency;
+  const jelly: Resident = {
+    species: "strawberryJelly",
+    x: 100,
+    baseY: 60,
+    y: 60,
+    dir: -1,
+    phase: 0,
+    bornAtMs: -10000,
+    arrivedAtMs: 0,
+    departing: false,
+  };
+  // t=0.5（沈降フェーズ中）
+  const next = stepResident(jelly, period * 0.5);
+  expect(next.x).toBeCloseTo(100 - 0.1 * 0.25, 5);
+});
+
 test("x は torus で折り返す", () => {
   const fish: Resident = {
     species: "ramuneFish",
