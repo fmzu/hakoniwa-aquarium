@@ -1,5 +1,6 @@
 import { BIRTH_FX_RING_MAX_RADIUS } from "../data/birth-fx-constants";
 import { RESIDENT_SPRITES } from "../data/resident-sprites";
+import { SPECIES_MOTION } from "../data/species-motion";
 import { nessieSprite } from "../data/sprites/nessie";
 import { shadowFishSprite } from "../data/sprites/shadow-fish";
 import {
@@ -67,12 +68,26 @@ export function drawScene(
     // 中央揃え（スプライト半幅 8）に対し右 +4 では 4px 早くポップアウトするため左右対称にする
     if (x < -8 || x > VIEW_WIDTH + 8) continue;
     const sprite = RESIDENT_SPRITES[resident.species];
-    // frameIntervalMs === 0（1 フレームのスプライト）は mod(x, 0) = NaN になるためガードする
-    const frameIndex =
-      sprite.frameIntervalMs === 0 ||
-      mod(state.elapsedMs, sprite.frameIntervalMs * 2) < sprite.frameIntervalMs
-        ? 0
-        : 1;
+    const motion = SPECIES_MOTION[resident.species];
+    let frameIndex: number;
+    if (motion.motionType === "zigzag") {
+      // 推進フェーズ（体が縮む frame 1）/ 沈降フェーズ（体が広がる frame 0）に同期させる
+      const t =
+        mod(
+          state.elapsedMs * motion.bobFrequency + resident.phase,
+          2 * Math.PI,
+        ) /
+        (2 * Math.PI);
+      frameIndex = t < 0.35 ? 1 : 0;
+    } else {
+      // frameIntervalMs === 0（1 フレームのスプライト）は mod(x, 0) = NaN になるためガードする
+      frameIndex =
+        sprite.frameIntervalMs === 0 ||
+        mod(state.elapsedMs, sprite.frameIntervalMs * 2) <
+          sprite.frameIntervalMs
+          ? 0
+          : 1;
+    }
     drawGrid(
       ctx,
       sprite.frames[frameIndex],

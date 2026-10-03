@@ -19,7 +19,7 @@ test("ラムネ魚は 0.25/tick で進み、振幅 4 で揺れる", () => {
   expect(next.y).toBeCloseTo(64, 5);
 });
 
-test("ストロベリークラゲは 0.1/tick で漂い、振幅 5 で揺れる", () => {
+test("ストロベリークラゲは 0.1/tick で漂い、ジグザグ軌道で揺れる", () => {
   const jelly: Resident = {
     species: "strawberryJelly",
     x: 100,
@@ -33,7 +33,8 @@ test("ストロベリークラゲは 0.1/tick で漂い、振幅 5 で揺れる"
   };
   const next = stepResident(jelly, 0);
   expect(next.x).toBeCloseTo(99.9, 5);
-  expect(next.y).toBeCloseTo(65, 5);
+  // t = (π/2)/(2π) = 0.25 → 推進フェーズ中（riseEnd=0.35）
+  expect(next.y).toBeCloseTo(60 - 5 * (0.25 / 0.35), 5);
 });
 
 test("x は torus で折り返す", () => {
