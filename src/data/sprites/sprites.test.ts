@@ -45,12 +45,12 @@ test("主人公・ラムネ魚・クラゲは 2 フレーム", () => {
   expect(strawberryJellySprite.frames.length).toBe(2);
 });
 
-test("たい焼きは剛体なので 1 フレーム・アニメなし", () => {
-  expect(taiyakiSprite.frames.length).toBe(1);
-  expect(taiyakiSprite.frameIntervalMs).toBe(0);
+test("たい焼きは 2 フレーム・控えめアニメ", () => {
+  expect(taiyakiSprite.frames.length).toBe(2);
+  expect(taiyakiSprite.frameIntervalMs).toBeGreaterThan(0);
 });
 
-test("たい焼きの形状はラムネ魚 frame1 の流用（量産式・ドット配置不変）", () => {
+test("たい焼きの frame0 はラムネ魚 frame0 の流用（量産式・ドット配置不変）", () => {
   expect(taiyakiSprite.frames[0]).toEqual(ramuneFishSprite.frames[0]);
 });
 

@@ -2,8 +2,7 @@ import type { Sprite } from "../../types";
 
 /**
  * たい焼き。形状はラムネ魚の流用（量産式: 形状テンプレート × フレーバーパレット）。
- * グリッドはラムネ魚 frame1 と同一（ドット配置不変）。
- * 剛体（焼き菓子は曲がらない）なので 1 フレーム・アニメなし
+ * 水に浮いて尾先が微かに揺れる程度のモーション（ラムネ魚より控えめ）
  */
 export const taiyakiSprite: Sprite = {
   width: 16,
@@ -27,6 +26,24 @@ export const taiyakiSprite: Sprite = {
       "................",
       "................",
     ],
+    [
+      "................",
+      "................",
+      "................",
+      ".....ELE........",
+      "...EEEEEE.......",
+      "..EHLLSSSE.EE...",
+      ".EOLLSSSSSELE...",
+      ".ESSSSSSSMSLE...",
+      "..ESSSSMMMELE...",
+      "...EESMME..EE...",
+      "................",
+      "................",
+      "................",
+      "................",
+      "................",
+      "................",
+    ],
   ],
   palette: {
     H: "#F6D394",
@@ -36,5 +53,5 @@ export const taiyakiSprite: Sprite = {
     E: "#8A5C2B",
     O: "#3A2A1E",
   },
-  frameIntervalMs: 0,
+  frameIntervalMs: 600,
 };
