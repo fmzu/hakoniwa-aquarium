@@ -23,3 +23,20 @@ test("クラゲは左右対称なので向きに関わらず反転しない", ()
     false,
   );
 });
+
+test("右向きのエビ・タツノオトシゴは鏡像反転する", () => {
+  expect(isResidentFlipped({ species: "shrimp", dir: 1 })).toBe(true);
+  expect(isResidentFlipped({ species: "seahorse", dir: 1 })).toBe(true);
+});
+
+test("左向きのエビ・タツノオトシゴは反転しない（原画の向き）", () => {
+  expect(isResidentFlipped({ species: "shrimp", dir: -1 })).toBe(false);
+  expect(isResidentFlipped({ species: "seahorse", dir: -1 })).toBe(false);
+});
+
+test("クリオネ・イカは左右対称なので向きに関わらず反転しない", () => {
+  for (const species of ["clione", "squid"] as const) {
+    expect(isResidentFlipped({ species, dir: 1 })).toBe(false);
+    expect(isResidentFlipped({ species, dir: -1 })).toBe(false);
+  }
+});

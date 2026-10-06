@@ -1,6 +1,10 @@
+import { clioneSprite } from "./data/sprites/clione";
 import { nessieSprite } from "./data/sprites/nessie";
 import { ramuneFishSprite } from "./data/sprites/ramune-fish";
+import { seahorseSprite } from "./data/sprites/seahorse";
 import { shadowFishSprite } from "./data/sprites/shadow-fish";
+import { shrimpSprite } from "./data/sprites/shrimp";
+import { squidSprite } from "./data/sprites/squid";
 import { strawberryJellySprite } from "./data/sprites/strawberry-jelly";
 import { taiyakiSprite } from "./data/sprites/taiyaki";
 import { MAX_TICKS_PER_FRAME, TICK_MS } from "./data/world-constants";
@@ -70,6 +74,42 @@ const swimmers: Swimmer[] = [
     dir: 1,
     speed: 0.035,
     phase: 4.8,
+  },
+  {
+    sprite: shrimpSprite,
+    label: "エビ",
+    x: 200,
+    baseY: 24,
+    dir: -1,
+    speed: 0.03,
+    phase: 0.7,
+  },
+  {
+    sprite: seahorseSprite,
+    label: "タツノオトシゴ",
+    x: 30,
+    baseY: 56,
+    dir: 1,
+    speed: 0.01,
+    phase: 1.9,
+  },
+  {
+    sprite: clioneSprite,
+    label: "クリオネ",
+    x: 120,
+    baseY: 24,
+    dir: 1,
+    speed: 0.012,
+    phase: 3.0,
+  },
+  {
+    sprite: squidSprite,
+    label: "イカ",
+    x: 200,
+    baseY: 136,
+    dir: -1,
+    speed: 0.02,
+    phase: 5.5,
   },
 ];
 
