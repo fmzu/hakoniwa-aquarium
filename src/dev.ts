@@ -1,3 +1,4 @@
+import { SPECIES_MOTION } from "./data/species-motion";
 import { clioneSprite } from "./data/sprites/clione";
 import { nessieSprite } from "./data/sprites/nessie";
 import { ramuneFishSprite } from "./data/sprites/ramune-fish";
@@ -25,6 +26,8 @@ type Swimmer = {
   x: number;
   baseY: number;
   dir: -1 | 1;
+  /** 右向きで鏡像反転するか。住民種は SPECIES_MOTION の値をそのまま使い、本番と向きを一致させる */
+  mirrorsByDirection: boolean;
   speed: number;
   phase: number;
 };
@@ -36,6 +39,7 @@ const swimmers: Swimmer[] = [
     x: 20,
     baseY: 24,
     dir: 1,
+    mirrorsByDirection: true,
     speed: 0.02,
     phase: 0,
   },
@@ -45,6 +49,7 @@ const swimmers: Swimmer[] = [
     x: 180,
     baseY: 56,
     dir: -1,
+    mirrorsByDirection: SPECIES_MOTION.ramuneFish.mirrorsByDirection,
     speed: 0.03,
     phase: 1.1,
   },
@@ -54,6 +59,7 @@ const swimmers: Swimmer[] = [
     x: 90,
     baseY: 88,
     dir: 1,
+    mirrorsByDirection: SPECIES_MOTION.strawberryJelly.mirrorsByDirection,
     speed: 0.015,
     phase: 2.4,
   },
@@ -63,6 +69,7 @@ const swimmers: Swimmer[] = [
     x: 140,
     baseY: 112,
     dir: -1,
+    mirrorsByDirection: SPECIES_MOTION.taiyaki.mirrorsByDirection,
     speed: 0.025,
     phase: 3.6,
   },
@@ -72,6 +79,7 @@ const swimmers: Swimmer[] = [
     x: 60,
     baseY: 136,
     dir: 1,
+    mirrorsByDirection: true,
     speed: 0.035,
     phase: 4.8,
   },
@@ -81,6 +89,7 @@ const swimmers: Swimmer[] = [
     x: 200,
     baseY: 24,
     dir: -1,
+    mirrorsByDirection: SPECIES_MOTION.shrimp.mirrorsByDirection,
     speed: 0.03,
     phase: 0.7,
   },
@@ -90,6 +99,7 @@ const swimmers: Swimmer[] = [
     x: 30,
     baseY: 56,
     dir: 1,
+    mirrorsByDirection: SPECIES_MOTION.seahorse.mirrorsByDirection,
     speed: 0.01,
     phase: 1.9,
   },
@@ -99,6 +109,7 @@ const swimmers: Swimmer[] = [
     x: 120,
     baseY: 24,
     dir: 1,
+    mirrorsByDirection: SPECIES_MOTION.clione.mirrorsByDirection,
     speed: 0.012,
     phase: 3.0,
   },
@@ -108,6 +119,7 @@ const swimmers: Swimmer[] = [
     x: 200,
     baseY: 136,
     dir: -1,
+    mirrorsByDirection: SPECIES_MOTION.squid.mirrorsByDirection,
     speed: 0.02,
     phase: 5.5,
   },
@@ -149,7 +161,7 @@ function drawSwimmer(
     mod(elapsedMs, sprite.frameIntervalMs * 2) < sprite.frameIntervalMs
       ? 0
       : 1;
-  const flip = swimmer.dir > 0;
+  const flip = swimmer.mirrorsByDirection && swimmer.dir > 0;
   drawGrid(
     ctx,
     sprite.frames[frameIndex],
