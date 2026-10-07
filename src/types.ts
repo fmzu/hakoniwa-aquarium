@@ -19,11 +19,18 @@ export type Bait = {
   phase: number;
 };
 
-export type SpeciesId = "ramuneFish" | "strawberryJelly" | "taiyaki";
+export type SpeciesId =
+  | "ramuneFish"
+  | "strawberryJelly"
+  | "taiyaki"
+  | "shrimp"
+  | "seahorse"
+  | "clione"
+  | "squid";
 
 /**
  * 種のサイズ階級。満員誕生の押し出しは同階級同士でのみ起きる
- * （同階級不在時は全住民へフォールバック）。現 3 種は全て "S"
+ * （同階級不在時は全住民へフォールバック）。現 7 種は全て "S"
  */
 export type SizeClass = "SS" | "S" | "M" | "L" | "LL";
 

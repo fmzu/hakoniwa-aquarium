@@ -1,8 +1,14 @@
+import { SPECIES_MOTION } from "../data/species-motion";
 import type { Resident } from "../types";
 
-/** 鏡像反転するか。魚形（ラムネ魚・たい焼き）は進行方向で反転、クラゲは左右対称なので反転しない */
+/**
+ * 鏡像反転するか。SPECIES_MOTION の mirrorsByDirection が true の種（魚形など）は右向きで反転。
+ * 左右対称の種（クラゲ・クリオネ・イカ）は反転するとハイライトの左右が入れ替わるため反転しない
+ */
 export function isResidentFlipped(
   resident: Pick<Resident, "species" | "dir">,
 ): boolean {
-  return resident.species !== "strawberryJelly" && resident.dir > 0;
+  return (
+    SPECIES_MOTION[resident.species].mirrorsByDirection && resident.dir > 0
+  );
 }

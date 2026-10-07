@@ -188,7 +188,7 @@
 - draw-scene の誕生ブロックの draw-birth-layer.ts への抽出
 - ringDotOffsets のメモ化
 - step-world の誕生 phase の 2π 剰余正規化
-- is-resident-flipped の対称性をデータ駆動化（SPECIES_MOTION に mirrorsByDirection を追加し型網羅で新種の判断を強制）
+- ~~is-resident-flipped の対称性をデータ駆動化（SPECIES_MOTION に mirrorsByDirection を追加し型網羅で新種の判断を強制）→ 実装済み（2026-10-06）~~
 - 起動時の抽選住民が視界外に湧くことがある（復元されていないように見える余地。視界近傍へ寄せる案）
 - 図鑑カードの canvas に role=img と aria-label を付与
 

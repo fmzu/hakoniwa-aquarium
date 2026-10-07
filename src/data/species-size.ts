@@ -9,4 +9,8 @@ export const SPECIES_SIZE: Record<SpeciesId, SizeClass> = {
   ramuneFish: "S",
   strawberryJelly: "S",
   taiyaki: "S",
+  shrimp: "S",
+  seahorse: "S",
+  clione: "S",
+  squid: "S",
 };
