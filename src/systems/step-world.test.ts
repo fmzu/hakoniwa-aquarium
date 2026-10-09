@@ -79,7 +79,7 @@ test("必要数に達すると誕生する（未発見が1種ならその種）"
   expect(next.satiety).toBe(0); // (need-1)+1 - need
   expect(next.residents.length).toBe(1);
   expect(next.residents[0].species).toBe("ramuneFish");
-  expect(next.residents[0].baseY).toBe(60); // clamp(hero.y, 24, 118)
+  expect(next.residents[0].baseY).toBe(60); // clamp(hero.y, 30, 100) ramuneFish
   expect(next.flashes.length).toBe(1); // 捕食リング1個
 });
 
@@ -348,7 +348,7 @@ test("演出明けの tick で主人公が再び動き出す", () => {
 test("来訪チェック時刻を過ぎると抽選し、当たれば視界外から 1 体来訪する", () => {
   const state = stateWithBaitAtHead({ baits: [], nextVisitCheckMs: 0 });
   // random=0.4: 当選（0.4 < VISIT_CHANCE 0.5）→ 種 floor(0.4*1)=0 →
-  // 左右 0.4 < 0.5 = 左外 → baseY 24 + 0.4*94 = 61.6 → phase 2.4
+  // 左右 0.4 < 0.5 = 左外 → baseY 30 + 0.4*70 = 58（ramuneFish depth 30-100）→ phase 2.4
   const next = stepWorld(state, () => 0.4, { ramuneFish: zukanEntry });
   expect(next.residents.length).toBe(1);
   const visitor = next.residents[0];
@@ -356,7 +356,7 @@ test("来訪チェック時刻を過ぎると抽選し、当たれば視界外�
   // hero は水流で 100.00768 に進む → camX = 36.00768 → 左外湧き = camX - 16
   expect(visitor.x).toBeCloseTo(20.00768, 3);
   expect(visitor.dir).toBe(1); // 視界へ向かって泳ぐ
-  expect(visitor.baseY).toBeCloseTo(61.6, 5);
+  expect(visitor.baseY).toBeCloseTo(58, 5);
   expect(visitor.bornAtMs).toBe(-BIRTH_FX_TOTAL_MS);
   expect(visitor.arrivedAtMs).toBeCloseTo(TICK_MS, 5);
   expect(visitor.departing).toBe(false);

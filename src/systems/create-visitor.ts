@@ -1,11 +1,7 @@
 import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
 import { VISIT_SPAWN_MARGIN_PX } from "../data/roster-constants";
-import {
-  RESIDENT_MAX_BASE_Y,
-  RESIDENT_MIN_BASE_Y,
-  VIEW_WIDTH,
-  WORLD_WIDTH,
-} from "../data/world-constants";
+import { SPECIES_MOTION } from "../data/species-motion";
+import { VIEW_WIDTH, WORLD_WIDTH } from "../data/world-constants";
 import { cameraX } from "../engine/camera-x";
 import { mod } from "../engine/mod";
 import type { Resident, SpeciesId } from "../types";
@@ -34,9 +30,9 @@ export function createVisitor(
   const x = fromLeft
     ? mod(camX - VISIT_SPAWN_MARGIN_PX, WORLD_WIDTH)
     : mod(camX + VIEW_WIDTH + VISIT_SPAWN_MARGIN_PX, WORLD_WIDTH);
+  const motion = SPECIES_MOTION[species];
   const baseY =
-    RESIDENT_MIN_BASE_Y +
-    random() * (RESIDENT_MAX_BASE_Y - RESIDENT_MIN_BASE_Y);
+    motion.depthMinY + random() * (motion.depthMaxY - motion.depthMinY);
   return {
     species,
     x,

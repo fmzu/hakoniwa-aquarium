@@ -1,9 +1,5 @@
 import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
 import { SPECIES_MOTION } from "../data/species-motion";
-import {
-  RESIDENT_MAX_BASE_Y,
-  RESIDENT_MIN_BASE_Y,
-} from "../data/world-constants";
 import { clamp } from "../engine/clamp";
 import type { Hero, Resident, SpeciesId } from "../types";
 
@@ -18,7 +14,8 @@ export function createNewborn(
   elapsedMs: number,
   random: () => number,
 ): Resident {
-  const baseY = clamp(hero.y, RESIDENT_MIN_BASE_Y, RESIDENT_MAX_BASE_Y);
+  const motion = SPECIES_MOTION[species];
+  const baseY = clamp(hero.y, motion.depthMinY, motion.depthMaxY);
   return {
     species,
     x: hero.x,

@@ -19,9 +19,9 @@ test("誕生地点は主人公の位置で、bornAtMs = arrivedAtMs = elapsedMs�
   expect(born.departing).toBe(false);
 });
 
-test("baseY は住民の遊泳域にクランプされる（上端・下端）", () => {
-  expect(createNewborn("ramuneFish", hero(0), 0, () => 0.5).baseY).toBe(24); // RESIDENT_MIN_BASE_Y
-  expect(createNewborn("ramuneFish", hero(200), 0, () => 0.5).baseY).toBe(118); // RESIDENT_MAX_BASE_Y
+test("baseY は種の遊泳域にクランプされる（上端・下端）", () => {
+  expect(createNewborn("ramuneFish", hero(0), 0, () => 0.5).baseY).toBe(30); // SPECIES_MOTION.ramuneFish.depthMinY
+  expect(createNewborn("ramuneFish", hero(200), 0, () => 0.5).baseY).toBe(100); // SPECIES_MOTION.ramuneFish.depthMaxY
 });
 
 test("演出明け（bornAtMs + BIRTH_FX_TOTAL_MS）に sin 項が 0 になる位相を持つ（y 飛び防止）", () => {

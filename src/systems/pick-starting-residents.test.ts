@@ -42,8 +42,8 @@ test("random=0.5 の抽選順は [strawberryJelly, taiyaki, ramuneFish]", () => 
 
 test("生成された住民は帯内の位置・誕生演出なしの bornAtMs を持つ", () => {
   const resident = pickStartingResidents({ ramuneFish: entry }, fixedRandom)[0];
-  expect(resident.baseY).toBe(71); // 24 + 0.5 * (118 - 24)
-  expect(resident.y).toBe(71);
+  expect(resident.baseY).toBe(65); // ramuneFish: depthMinY 30 + 0.5 * (100 - 30)
+  expect(resident.y).toBe(65);
   expect(resident.x).toBe(240); // 0.5 * 480
   expect(resident.dir).toBe(1); // 0.5 < 0.5 は false
   expect(resident.phase).toBe(3); // 0.5 * 6

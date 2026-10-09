@@ -28,8 +28,8 @@ test("右外湧き: 視界の右外（camX + VIEW_WIDTH + 16）に湧き、左�
   expect(visitor.species).toBe("taiyaki"); // floor(0.5 * 2) = 1
   expect(visitor.x).toBe(180); // mod(36 + 128 + 16, 480)
   expect(visitor.dir).toBe(-1); // 視界へ向かう
-  expect(visitor.baseY).toBe(71); // 24 + 0.5 * 94
-  expect(visitor.y).toBe(71);
+  expect(visitor.baseY).toBe(79); // taiyaki: depthMinY 40 + 0.5 * (118 - 40)
+  expect(visitor.y).toBe(79);
   expect(visitor.phase).toBe(3); // 0.5 * 6
   expect(visitor.arrivedAtMs).toBe(300000);
   expect(visitor.departing).toBe(false);

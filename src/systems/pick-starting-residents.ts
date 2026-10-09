@@ -1,10 +1,7 @@
 import { BIRTH_FX_TOTAL_MS } from "../data/birth-fx-constants";
 import { ROSTER_MAX, ROSTER_MIN } from "../data/roster-constants";
-import {
-  RESIDENT_MAX_BASE_Y,
-  RESIDENT_MIN_BASE_Y,
-  WORLD_WIDTH,
-} from "../data/world-constants";
+import { SPECIES_MOTION } from "../data/species-motion";
+import { WORLD_WIDTH } from "../data/world-constants";
 import type { Resident, Zukan } from "../types";
 import { discoveredSpecies } from "./discovered-species";
 
@@ -26,9 +23,9 @@ export function pickStartingResidents(
   const residents: Resident[] = [];
   for (let i = 0; i < count; i++) {
     const species = pool.splice(Math.floor(random() * pool.length), 1)[0];
+    const motion = SPECIES_MOTION[species];
     const baseY =
-      RESIDENT_MIN_BASE_Y +
-      random() * (RESIDENT_MAX_BASE_Y - RESIDENT_MIN_BASE_Y);
+      motion.depthMinY + random() * (motion.depthMaxY - motion.depthMinY);
     residents.push({
       species,
       x: random() * WORLD_WIDTH,

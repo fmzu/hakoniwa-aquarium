@@ -11,6 +11,10 @@ type Motion = {
   motionType: "swim" | "zigzag";
   /** true: 進行方向で左右鏡像反転して描く。左右対称（反転するとハイライトが入れ替わる）なら false */
   mirrorsByDirection: boolean;
+  /** 遊泳域の上端（y座標。小さいほど上） */
+  depthMinY: number;
+  /** 遊泳域の下端（y座標。大きいほど下） */
+  depthMaxY: number;
 };
 
 export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
@@ -20,6 +24,8 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     bobFrequency: 0.0015,
     motionType: "swim",
     mirrorsByDirection: true,
+    depthMinY: 30,
+    depthMaxY: 100,
   },
   strawberryJelly: {
     speed: 0.1,
@@ -27,6 +33,8 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     bobFrequency: 0.001,
     motionType: "zigzag",
     mirrorsByDirection: false,
+    depthMinY: 24,
+    depthMaxY: 80,
   },
   taiyaki: {
     speed: 0.18,
@@ -34,6 +42,8 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     bobFrequency: 0.0012,
     motionType: "swim",
     mirrorsByDirection: true,
+    depthMinY: 40,
+    depthMaxY: 118,
   },
   shrimp: {
     speed: 0.22,
@@ -41,6 +51,8 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     bobFrequency: 0.0018,
     motionType: "swim",
     mirrorsByDirection: true,
+    depthMinY: 80,
+    depthMaxY: 118,
   },
   seahorse: {
     speed: 0.08,
@@ -48,6 +60,8 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     bobFrequency: 0.0008,
     motionType: "swim",
     mirrorsByDirection: true,
+    depthMinY: 50,
+    depthMaxY: 110,
   },
   clione: {
     speed: 0.06,
@@ -55,6 +69,8 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     bobFrequency: 0.0012,
     motionType: "swim",
     mirrorsByDirection: false,
+    depthMinY: 24,
+    depthMaxY: 60,
   },
   squid: {
     speed: 0.12,
@@ -62,5 +78,7 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     bobFrequency: 0.0012,
     motionType: "zigzag",
     mirrorsByDirection: false,
+    depthMinY: 30,
+    depthMaxY: 90,
   },
 };
