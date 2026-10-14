@@ -37,7 +37,7 @@ export function drawScene(
   satietyMax: number,
 ): void {
   drawBackground(ctx, camY);
-  drawPath(ctx, state.path, camX, camY);
+  drawPath(ctx, state.path, camX, camY, state.elapsedMs);
 
   for (const bait of state.baits) {
     const x = torusDistance(bait.x, camX, WORLD_WIDTH);

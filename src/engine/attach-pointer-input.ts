@@ -41,10 +41,7 @@ export function attachPointerInput(
   canvas.addEventListener("pointermove", (event) => {
     if (!event.isPrimary) return;
     if (!drawing) return;
-    // マウスはカーソル追従: isStart=true で path=[point] に置き換え続ける
-    // タッチ/ペンは線描き: isStart=false で shouldAddWaypoint がウェイポイントを蓄積
-    const isMouse = event.pointerType === "mouse";
-    onStroke(toWorld(event), isMouse);
+    onStroke(toWorld(event), false);
   });
   canvas.addEventListener("pointerup", () => {
     drawing = false;
