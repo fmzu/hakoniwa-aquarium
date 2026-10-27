@@ -150,7 +150,7 @@
 - ランタイム: Bun（パッケージ管理・テストランナー）
 - ビルド: Vite + 素の Canvas 2D（フレームワーク・ゲームエンジン不使用）
 - lint/format: Biome
-- CI/CD: GitHub Actions（lint / tsc / test / build）→ Cloudflare Pages デプロイ（wrangler-action）
+- CI/CD: GitHub Actions（lint / tsc / test / build）で検査。本番は Cloudflare Pages の Git 連携が main への push ごとに同じ検査をしてからビルド・デプロイ（トークンを GitHub に置かない）
 - 一関数一ファイルを厳守。純粋関数（torus距離・深度lerp・誕生抽選等）はすべて bun test でテストし、描画はテストしない
 
 ## テスト観点
@@ -204,7 +204,7 @@
 
 インフラ:
 
-- Cloudflare Pages への移行 → 実施済み（2026-07-07）。デプロイ先: hakoniwa-aquarium.pages.dev、CI から wrangler-action でデプロイ
+- Cloudflare Pages への移行 → 実施済み（2026-07-07）。デプロイ先: hakoniwa-aquarium.pages.dev、2026-10-27 に Cloudflare の Git 連携へ移行（設定はダッシュボード側）
 
 ## リポジトリ
 
