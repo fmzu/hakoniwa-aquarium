@@ -9,4 +9,7 @@ export const SPECIES_NAMES: Record<SpeciesId, string> = {
   seahorse: "タツノオトシゴ",
   clione: "クリオネ",
   squid: "イカ",
+  salmon: "サーモン",
+  maguro: "まぐろ",
+  tamago: "たまご",
 };

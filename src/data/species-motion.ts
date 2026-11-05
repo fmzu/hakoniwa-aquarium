@@ -7,8 +7,11 @@ type Motion = {
   bobAmplitude: number;
   /** 揺れの角速度（rad/ms） */
   bobFrequency: number;
-  /** "swim": sin波の等速揺れ。"zigzag": 速い推進＋ゆっくり沈降のジグザグ軌道 */
-  motionType: "swim" | "zigzag";
+  /**
+   * "swim": sin波の等速揺れ。"zigzag": 速い推進＋ゆっくり沈降のジグザグ軌道。
+   * "inch": のびるコマの間だけ進む尺取り虫のような泳ぎ（お寿司）。speed は進んでいる間の速さ
+   */
+  motionType: "swim" | "zigzag" | "inch";
   /** true: 進行方向で左右鏡像反転して描く。左右対称（反転するとハイライトが入れ替わる）なら false */
   mirrorsByDirection: boolean;
   /** 遊泳域の上端（y座標。小さいほど上） */
@@ -80,5 +83,32 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     mirrorsByDirection: false,
     depthMinY: 30,
     depthMaxY: 90,
+  },
+  salmon: {
+    speed: 0.13,
+    bobAmplitude: 3,
+    bobFrequency: 0.0012,
+    motionType: "inch",
+    mirrorsByDirection: true,
+    depthMinY: 30,
+    depthMaxY: 110,
+  },
+  maguro: {
+    speed: 0.23,
+    bobAmplitude: 3,
+    bobFrequency: 0.0012,
+    motionType: "inch",
+    mirrorsByDirection: true,
+    depthMinY: 30,
+    depthMaxY: 110,
+  },
+  tamago: {
+    speed: 0.165,
+    bobAmplitude: 3,
+    bobFrequency: 0.0012,
+    motionType: "inch",
+    mirrorsByDirection: true,
+    depthMinY: 30,
+    depthMaxY: 110,
   },
 };

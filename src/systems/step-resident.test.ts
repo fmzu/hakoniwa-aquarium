@@ -103,3 +103,20 @@ test("演出時間（2500ms）経過後は通常挙動に戻る", () => {
   const next = stepResident(newborn, 2500);
   expect(next.x).toBe(100.25);
 });
+
+test("お寿司（inch）はのびるコマの間だけ進み、ちぢむコマでは止まる", () => {
+  const sushi: Resident = {
+    species: "salmon",
+    x: 100,
+    baseY: 60,
+    y: 60,
+    dir: -1,
+    phase: 0,
+    bornAtMs: -10000,
+    arrivedAtMs: 0,
+    departing: false,
+  };
+  // phase=0 は 0〜frameIntervalMs がのびるコマ、次の frameIntervalMs がちぢむコマ
+  expect(stepResident(sushi, 0).x).toBeCloseTo(100 - 0.13, 5);
+  expect(stepResident(sushi, 384).x).toBe(100);
+});
