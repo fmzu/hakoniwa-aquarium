@@ -1,13 +1,16 @@
 import { SPECIES_MOTION } from "./data/species-motion";
 import { clioneSprite } from "./data/sprites/clione";
+import { maguroSprite } from "./data/sprites/maguro";
 import { nessieSprite } from "./data/sprites/nessie";
 import { ramuneFishSprite } from "./data/sprites/ramune-fish";
+import { salmonSprite } from "./data/sprites/salmon";
 import { seahorseSprite } from "./data/sprites/seahorse";
 import { shadowFishSprite } from "./data/sprites/shadow-fish";
 import { shrimpSprite } from "./data/sprites/shrimp";
 import { squidSprite } from "./data/sprites/squid";
 import { strawberryJellySprite } from "./data/sprites/strawberry-jelly";
 import { taiyakiSprite } from "./data/sprites/taiyaki";
+import { tamagoSprite } from "./data/sprites/tamago";
 import { MAX_TICKS_PER_FRAME, TICK_MS } from "./data/world-constants";
 import { createFixedTimestep } from "./engine/create-fixed-timestep";
 import { mod } from "./engine/mod";
@@ -122,6 +125,36 @@ const swimmers: Swimmer[] = [
     mirrorsByDirection: SPECIES_MOTION.squid.mirrorsByDirection,
     speed: 0.02,
     phase: 5.5,
+  },
+  {
+    sprite: salmonSprite,
+    label: "サーモン",
+    x: 40,
+    baseY: 130,
+    dir: 1,
+    mirrorsByDirection: SPECIES_MOTION.salmon.mirrorsByDirection,
+    speed: 0.015,
+    phase: 0.7,
+  },
+  {
+    sprite: maguroSprite,
+    label: "まぐろ",
+    x: 120,
+    baseY: 130,
+    dir: -1,
+    mirrorsByDirection: SPECIES_MOTION.maguro.mirrorsByDirection,
+    speed: 0.015,
+    phase: 2.4,
+  },
+  {
+    sprite: tamagoSprite,
+    label: "たまご",
+    x: 200,
+    baseY: 130,
+    dir: 1,
+    mirrorsByDirection: SPECIES_MOTION.tamago.mirrorsByDirection,
+    speed: 0.015,
+    phase: 4.1,
   },
 ];
 

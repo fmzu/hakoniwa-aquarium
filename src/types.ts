@@ -26,7 +26,10 @@ export type SpeciesId =
   | "shrimp"
   | "seahorse"
   | "clione"
-  | "squid";
+  | "squid"
+  | "salmon"
+  | "maguro"
+  | "tamago";
 
 /**
  * 種のサイズ階級。満員誕生の押し出しは同階級同士でのみ起きる

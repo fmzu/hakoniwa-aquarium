@@ -1,14 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import type { Sprite } from "../../types";
 import { clioneSprite } from "./clione";
+import { maguroSprite } from "./maguro";
 import { nessieSprite } from "./nessie";
 import { ramuneFishSprite } from "./ramune-fish";
+import { salmonSprite } from "./salmon";
 import { seahorseSprite } from "./seahorse";
 import { shadowFishSprite } from "./shadow-fish";
 import { shrimpSprite } from "./shrimp";
 import { squidSprite } from "./squid";
 import { strawberryJellySprite } from "./strawberry-jelly";
 import { taiyakiSprite } from "./taiyaki";
+import { tamagoSprite } from "./tamago";
 
 const sprites: ReadonlyArray<[string, Sprite]> = [
   ["nessie", nessieSprite],
@@ -20,6 +23,9 @@ const sprites: ReadonlyArray<[string, Sprite]> = [
   ["seahorse", seahorseSprite],
   ["clione", clioneSprite],
   ["squid", squidSprite],
+  ["salmon", salmonSprite],
+  ["maguro", maguroSprite],
+  ["tamago", tamagoSprite],
 ];
 
 describe("スプライト整合性", () => {
