@@ -5,14 +5,18 @@ import { createFixedTimestep } from "./engine/create-fixed-timestep";
 import { shouldAddWaypoint } from "./engine/should-add-waypoint";
 import { applyCanvasScale } from "./render/apply-canvas-scale";
 import { drawScene } from "./render/draw-scene";
+import { createInitialSave } from "./save/create-initial-save";
 import { loadSave } from "./save/load-save";
 import { storeSave } from "./save/store-save";
 import { updateZukan } from "./save/update-zukan";
+import { debugBirth } from "./systems/debug-birth";
 import { detectBornResident } from "./systems/detect-born-resident";
 import { restoreStateFromSave } from "./systems/restore-state-from-save";
 import { satietyMax } from "./systems/satiety-max";
 import { stepWorld } from "./systems/step-world";
+import { attachDebugPanel } from "./ui/attach-debug-panel";
 import { attachZukanUi } from "./ui/attach-zukan-ui";
+import { isDebugMode } from "./ui/is-debug-mode";
 import { renderZukanIcon } from "./ui/render-zukan-icon";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#game");
@@ -29,6 +33,21 @@ attachZukanUi(() => zukan);
 renderZukanIcon();
 
 const getCamera = () => cameraPosition(state.hero.x, state.hero.y);
+
+// 動作確認用（?debug のときだけ）。餌を食べずに好きな種を今すぐ誕生させる
+if (isDebugMode(window.location.search)) {
+  attachDebugPanel(
+    (species) => {
+      state = debugBirth(state, species, Math.random);
+      zukan = updateZukan(zukan, species, new Date().toISOString());
+      storeSave({ version: 1, zukan, satiety: state.satiety });
+    },
+    () => {
+      storeSave(createInitialSave());
+      window.location.reload();
+    },
+  );
+}
 
 attachPointerInput(canvas, getCamera, (point, isStart) => {
   if (isStart) {
