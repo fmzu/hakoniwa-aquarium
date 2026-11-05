@@ -34,8 +34,9 @@ renderZukanIcon();
 
 const getCamera = () => cameraPosition(state.hero.x, state.hero.y);
 
-// 動作確認用（?debug のときだけ）。餌を食べずに好きな種を今すぐ誕生させる
-if (isDebugMode(window.location.search)) {
+// 動作確認用（開発サーバーで ?debug のときだけ。本番ビルドではこの分岐ごと消える）。
+// 餌を食べずに好きな種を今すぐ誕生させる
+if (import.meta.env.DEV && isDebugMode(window.location.search)) {
   attachDebugPanel(
     (species) => {
       state = debugBirth(state, species, Math.random);
