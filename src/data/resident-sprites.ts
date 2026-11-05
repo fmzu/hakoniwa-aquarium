@@ -1,5 +1,6 @@
 import type { SpeciesId, Sprite } from "../types";
 import { clioneSprite } from "./sprites/clione";
+import { launcharmSprite } from "./sprites/launcharm";
 import { maguroSprite } from "./sprites/maguro";
 import { ramuneFishSprite } from "./sprites/ramune-fish";
 import { salmonSprite } from "./sprites/salmon";
@@ -22,4 +23,5 @@ export const RESIDENT_SPRITES: Record<SpeciesId, Sprite> = {
   salmon: salmonSprite,
   maguro: maguroSprite,
   tamago: tamagoSprite,
+  launcharm: launcharmSprite,
 };

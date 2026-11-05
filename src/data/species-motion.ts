@@ -111,4 +111,13 @@ export const SPECIES_MOTION: Record<SpeciesId, Motion> = {
     depthMinY: 30,
     depthMaxY: 110,
   },
+  launcharm: {
+    speed: 0.2,
+    bobAmplitude: 3,
+    bobFrequency: 0.0013,
+    motionType: "swim",
+    mirrorsByDirection: true,
+    depthMinY: 30,
+    depthMaxY: 100,
+  },
 };

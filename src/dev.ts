@@ -1,5 +1,6 @@
 import { SPECIES_MOTION } from "./data/species-motion";
 import { clioneSprite } from "./data/sprites/clione";
+import { launcharmSprite } from "./data/sprites/launcharm";
 import { maguroSprite } from "./data/sprites/maguro";
 import { nessieSprite } from "./data/sprites/nessie";
 import { ramuneFishSprite } from "./data/sprites/ramune-fish";
@@ -155,6 +156,16 @@ const swimmers: Swimmer[] = [
     mirrorsByDirection: SPECIES_MOTION.tamago.mirrorsByDirection,
     speed: 0.015,
     phase: 4.1,
+  },
+  {
+    sprite: launcharmSprite,
+    label: "ランチャーム",
+    x: 120,
+    baseY: 100,
+    dir: -1,
+    mirrorsByDirection: SPECIES_MOTION.launcharm.mirrorsByDirection,
+    speed: 0.015,
+    phase: 3.3,
   },
 ];
 

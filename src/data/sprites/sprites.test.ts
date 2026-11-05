@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Sprite } from "../../types";
 import { clioneSprite } from "./clione";
+import { launcharmSprite } from "./launcharm";
 import { maguroSprite } from "./maguro";
 import { nessieSprite } from "./nessie";
 import { ramuneFishSprite } from "./ramune-fish";
@@ -26,6 +27,7 @@ const sprites: ReadonlyArray<[string, Sprite]> = [
   ["salmon", salmonSprite],
   ["maguro", maguroSprite],
   ["tamago", tamagoSprite],
+  ["launcharm", launcharmSprite],
 ];
 
 describe("スプライト整合性", () => {

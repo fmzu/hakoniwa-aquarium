@@ -29,7 +29,8 @@ export type SpeciesId =
   | "squid"
   | "salmon"
   | "maguro"
-  | "tamago";
+  | "tamago"
+  | "launcharm";
 
 /**
  * 種のサイズ階級。満員誕生の押し出しは同階級同士でのみ起きる
