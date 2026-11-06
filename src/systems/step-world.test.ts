@@ -62,7 +62,7 @@ test("経過時間が TICK_MS だけ進む", () => {
 test("頭の近くの餌を食べると満腹 +1 し、餌は反対側にリスポーンする", () => {
   const next = stepWorld(stateWithBaitAtHead(), fixedRandom, {});
   expect(next.satiety).toBe(1);
-  expect(next.baits[0].x).toBeCloseTo(340.00768, 3); // mod(hero.x + 240, 480)
+  expect(next.baits[0].x).toBeCloseTo(340, 5); // mod(hero.x + 240, 480)。線が空なので hero は動かない
   expect(next.baits[0].baseY).toBe(74); // 28 + 0.5 * 92
   expect(next.flashes.length).toBe(1);
 });
@@ -204,7 +204,7 @@ test("退場予定は定員に数えない（8 体中 1 体退場予定なら押
 });
 
 test("退場予定の住民は視界外に出た瞬間に消え、視界内なら泳ぎ続ける", () => {
-  // hero は水流で x=100.00768 に進む → camX = 36.00768。
+  // 線が空なので hero は x=100 のまま → camX = 36。
   // 生存域は screenX ∈ [-12, 140]（DESPAWN_MARGIN_PX=12）
   const base = {
     baseY: 60,
@@ -353,8 +353,8 @@ test("来訪チェック時刻を過ぎると抽選し、当たれば視界外�
   expect(next.residents.length).toBe(1);
   const visitor = next.residents[0];
   expect(visitor.species).toBe("ramuneFish");
-  // hero は水流で 100.00768 に進む → camX = 36.00768 → 左外湧き = camX - 16
-  expect(visitor.x).toBeCloseTo(20.00768, 3);
+  // 線が空なので hero は x=100 のまま → camX = 36 → 左外湧き = camX - 16
+  expect(visitor.x).toBeCloseTo(20, 5);
   expect(visitor.dir).toBe(1); // 視界へ向かって泳ぐ
   expect(visitor.baseY).toBeCloseTo(58, 5);
   expect(visitor.bornAtMs).toBe(-BIRTH_FX_TOTAL_MS);

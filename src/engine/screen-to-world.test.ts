@@ -14,7 +14,7 @@ test("カメラ位置が加算され x は torus で折り返す", () => {
   expect(p.x).toBe(10); // mod(470 + 20, 480)
 });
 
-test("y は入力可能範囲にクランプされる", () => {
-  expect(screenToWorld(0, 0, rect, 0, 0).y).toBe(6);
-  expect(screenToWorld(0, 180, rect, 0, 100).y).toBe(152); // min(100+90, 160-8)
+test("y は主人公が泳げる範囲にクランプされる（届かない点を線に入れない）", () => {
+  expect(screenToWorld(0, 0, rect, 0, 0).y).toBe(10); // HERO_MIN_Y
+  expect(screenToWorld(0, 180, rect, 0, 100).y).toBe(140); // HERO_MAX_Y
 });

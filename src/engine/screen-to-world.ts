@@ -1,6 +1,6 @@
 import {
-  INPUT_MAX_Y,
-  INPUT_MIN_Y,
+  HERO_MAX_Y,
+  HERO_MIN_Y,
   VIEW_HEIGHT,
   VIEW_WIDTH,
   WORLD_WIDTH,
@@ -24,6 +24,6 @@ export function screenToWorld(
     ((clientY - canvasRect.top) * VIEW_HEIGHT) / canvasRect.height;
   return {
     x: mod(camX + screenX, WORLD_WIDTH),
-    y: clamp(camY + screenY, INPUT_MIN_Y, INPUT_MAX_Y),
+    y: clamp(camY + screenY, HERO_MIN_Y, HERO_MAX_Y),
   };
 }
