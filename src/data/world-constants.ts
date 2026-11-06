@@ -13,24 +13,27 @@ export const MAX_TICKS_PER_FRAME = 5;
 /** 線描き入力 */
 export const WAYPOINT_SPACING = 4;
 export const MAX_WAYPOINTS = 60;
-/** ウェイポイントに「到達した」とみなす距離 */
-export const WAYPOINT_REACH = 5;
 /** 入力の y クランプ（画面端ギリギリを描かせない） */
 export const INPUT_MIN_Y = 6;
 export const INPUT_MAX_Y = WORLD_HEIGHT - 8;
 
-/** 推進・水流・抗力 */
-export const BASE_THRUST = 0.013;
-export const STROKE_THRUST = 0.045;
+/**
+ * 主人公の移動。描いた線の上をそのまま進む（押し流されない・行き過ぎない）。
+ * 速さは「ひと掻き」の周期で伸び縮みする（スプライトの掻きフレームと同期）
+ */
+/** ひと掻き以外のときの速さ（px/tick） */
+export const HERO_SPEED_GLIDE = 0.75;
+/** ひと掻き中の速さ（px/tick） */
+export const HERO_SPEED_STROKE = 1.15;
 export const STROKE_CYCLE_MS = 900;
 export const STROKE_ACTIVE_MS = 360;
-export const DRAG = 0.96;
-/**
- * 水流（+x 方向）。設計原則: 水流の終端速度 < 主人公の持続推進。
- * これを破ると左移動不能になりリング世界が壊れる
- */
-export const CURRENT_VX = 0.008;
-/** 向き反転のしきい値（|vx| がこれを超えたら向きを更新） */
+/** 1 tick ごとに速さが目標の速さへ寄る割合。出だしと止まり際のなめらかさ */
+export const HERO_SPEED_EASE = 0.15;
+/** 線の残りがこれ（px）未満になったら減速を始める */
+export const HERO_ARRIVE_DISTANCE = 12;
+/** 減速の下限（目標の速さに掛ける比率）。0 にすると線の終点に着かない */
+export const HERO_ARRIVE_MIN_RATIO = 0.35;
+/** 向き反転のしきい値（1 tick の x 移動量 |vx| がこれを超えたら向きを更新） */
 export const FACING_FLIP_SPEED = 0.05;
 export const HERO_MIN_Y = 10;
 export const HERO_MAX_Y = 140;
