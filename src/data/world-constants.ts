@@ -13,9 +13,6 @@ export const MAX_TICKS_PER_FRAME = 5;
 /** 線描き入力 */
 export const WAYPOINT_SPACING = 4;
 export const MAX_WAYPOINTS = 60;
-/** 入力の y クランプ（画面端ギリギリを描かせない） */
-export const INPUT_MIN_Y = 6;
-export const INPUT_MAX_Y = WORLD_HEIGHT - 8;
 
 /**
  * 主人公の移動。描いた線の上をそのまま進む（押し流されない・行き過ぎない）。
@@ -35,6 +32,10 @@ export const HERO_ARRIVE_DISTANCE = 12;
 export const HERO_ARRIVE_MIN_RATIO = 0.35;
 /** 向き反転のしきい値（1 tick の x 移動量 |vx| がこれを超えたら向きを更新） */
 export const FACING_FLIP_SPEED = 0.05;
+/**
+ * 主人公が泳げる y の範囲。線の入力もこの範囲にクランプする
+ * （届かない点が線に残ると、線をなぞる移動がそこで止まってしまうため）
+ */
 export const HERO_MIN_Y = 10;
 export const HERO_MAX_Y = 140;
 

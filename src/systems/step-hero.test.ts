@@ -106,3 +106,19 @@ test("入力の path を破壊しない（純粋関数）", () => {
   stepHero(still(), input, false);
   expect(input.length).toBe(1);
 });
+
+test("画面の上端・下端に描いた線でも最後まで進める", () => {
+  const { hero, path } = run(
+    still(),
+    [
+      { x: 80, y: 10 },
+      { x: 100, y: 40 },
+      { x: 100, y: 140 },
+      { x: 120, y: 60 },
+    ],
+    1000,
+  );
+  expect(path.length).toBe(0);
+  expect(hero.x).toBeCloseTo(120, 5);
+  expect(hero.y).toBeCloseTo(60, 5);
+});
