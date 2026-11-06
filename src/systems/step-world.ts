@@ -1,5 +1,4 @@
 import { VISIT_CHANCE, VISIT_INTERVAL_MS } from "../data/roster-constants";
-import { SPECIES_SIZE } from "../data/species-size";
 import {
   BAIT_MAX_BASE_Y,
   BAIT_MIN_BASE_Y,
@@ -9,8 +8,8 @@ import {
 } from "../data/world-constants";
 import { isStrokePhase } from "../engine/is-stroke-phase";
 import type { Flash, GameState, Zukan } from "../types";
+import { addNewborn } from "./add-newborn";
 import { countActiveResidents } from "./count-active-residents";
-import { createNewborn } from "./create-newborn";
 import { createVisitor } from "./create-visitor";
 import { discoveredSpecies } from "./discovered-species";
 import { headPosition } from "./head-position";
@@ -18,7 +17,6 @@ import { isBaitCaught } from "./is-bait-caught";
 import { isCeremonyActive } from "./is-ceremony-active";
 import { isOutOfView } from "./is-out-of-view";
 import { nextBirthSpecies } from "./next-birth-species";
-import { pickDepartingIndex } from "./pick-departing-index";
 import { respawnBait } from "./respawn-bait";
 import { satietyMax } from "./satiety-max";
 import { stepBait } from "./step-bait";
@@ -78,21 +76,7 @@ export function stepWorld(
     // セレモニー中は捕食無効なので誕生の連鎖も起きない
     satiety -= need;
     const species = nextBirthSpecies(zukan, random);
-    // 満員（退場予定を除く実効数が上限）でも誕生する（押し出し方式。
-    // docs/spec.md 決定ログ 3 参照）。新生児と同サイズ階級から 1 体を退場予定にする。
-    // 新生児を配列に加える前に選ぶことで新生児自身を対象から除外する
-    if (countActiveResidents(residents) >= RESIDENT_MAX) {
-      const departingIndex = pickDepartingIndex(
-        residents,
-        SPECIES_SIZE[species],
-        elapsedMs,
-        random,
-      );
-      residents = residents.map((resident, index) =>
-        index === departingIndex ? { ...resident, departing: true } : resident,
-      );
-    }
-    residents = [...residents, createNewborn(species, hero, elapsedMs, random)];
+    residents = addNewborn(residents, species, hero, elapsedMs, random);
     // セレモニー中はカメラ（主人公追従）を止め誕生地点にフォーカスするため即座に静止
     hero = { ...hero, vx: 0, vy: 0 };
   }

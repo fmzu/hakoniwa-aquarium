@@ -12,4 +12,5 @@ export const SPECIES_NAMES: Record<SpeciesId, string> = {
   salmon: "サーモン",
   maguro: "まぐろ",
   tamago: "たまご",
+  launcharm: "ランチャーム",
 };

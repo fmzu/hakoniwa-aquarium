@@ -131,6 +131,38 @@
         font-size: 14px;
         cursor: pointer;
       }
+      /* 動作確認用パネル（開発サーバーで ?debug のときだけ main.ts が追加する） */
+      #debug-panel {
+        position: fixed;
+        left: 8px;
+        bottom: 8px;
+        max-width: min(92vw, 360px);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 8px;
+        background: rgba(18, 39, 51, 0.88);
+        color: #eaf8ff;
+        font-family: "DotGothic16", sans-serif;
+        font-size: 12px;
+      }
+      #debug-panel p {
+        width: 100%;
+      }
+      #debug-panel button {
+        font: inherit;
+        color: #eaf8ff;
+        background: #2c5d74;
+        border: none;
+        padding: 4px 8px;
+        cursor: pointer;
+      }
+      #debug-panel button:hover {
+        background: #3e7ea6;
+      }
+      #debug-panel .debug-reset {
+        background: #6b3a44;
+      }
     </style>
   </head>
   <body>
